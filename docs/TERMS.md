@@ -13,6 +13,7 @@
 | **圈复杂度（CC）** | 函数里独立执行路径数：if/循环/switch 各 +1 | McCabe 1976；1-5 简单、6-10 中等、>10 高险 |
 | **变异测试（Mutation Testing）** | 故意改坏代码（+变−、<变>=、反转布尔），跑测试看能否抓出来 | 抓出来=被杀（测试有效）；没抓=存活（盲区）。工具：clj-mutate/mutator/Stryker/PIT |
 | **存活变异体（Surviving Mutant）** | 代码被改坏但测试全绿 → 这条行为没测试守护 | 比覆盖率数字更诚实的测试质量测量 |
+| **等价变异体（Equivalent Mutant）** | 变异后行为实际不变，测试抓不到是正常的，不属于测试缺陷 | 可人工标注后跳过；实证案例（negative-test-experiment）：clj-mutate 把 `1→0`（布尔翻转）打在父 `if`/`cond` 行、字面量却在子分支 → 文本替换是 no-op，手改真实字面量即杀死 |
 | **Gherkin** | "人话"测试描述语言，Given/When/Then，可转成可执行测试 | BDD 核心语言；框架：Cucumber、Reqnroll（.NET） |
 | **lost in the middle** | 大模型对 prompt 开头结尾记得牢、中间段被忽略（U 形注意力） | Liu et al. 2023 论文；中间段召回可降 10-40% |
 | **聪明区/愚蠢区** | 上下文窗口里注意力强的区域（头尾）与弱的区域（中间） | 注意力稀释效应的通俗比喻 |

@@ -47,15 +47,15 @@
 - **结论（已核验官方 README）**：**dryer（unclebob，19★）是多语言版**——Clojure/Java/Go/TypeScript/Rust/Python 全支持，一次运行按文件语言自动归一化结构指纹（Jaccard 相似度，`--threshold` 默认 0.82，`--edn`/`--min-lines`/`--min-nodes`），**覆盖全部 4 种目标语言**（更正此前"TS/Rust 无 Bob 版"的判断）；dry4go（25★，Go 专用）作 Go 备选（`dry4go --json .`，按函数/方法 AST 归一化）。
 - **实施**：4 张 tools/<语言>.yaml 均写入 `dry_tool/dry_install/dry_cmd`；gates.yaml 可选维度说明更新；quality-check.sh 支持 `--with-dry` 一键跑 DRY。
 
-### P3：参考 Acceptance-Pipeline-Specification 校准模板
+### P3：参考 Acceptance-Pipeline-Specification 校准模板（✅ 已完成）
 - **仓库**：unclebob/Acceptance-Pipeline-Specification（Go，190★）——可移植验收流水线规格。
-- **理由**：Bob 把"验收流水线"做成可移植规格，与本仓库 templates/（角色/宪法/质量关卡）同题，可校准我们的模板结构与流程描述。
-- **动作**：拉取规格文档，对照 templates/project/ 逐项比对，差异写进本清单或直接修订。
+- **规格要点（已核验 README + 组件清单）**：正常验收运行 = `.feature` → gherkin 解析（JSON IR）→（可选 IR-DRY 检查）→ 验收入口生成 → 项目 runner；验收变异运行 = feature → 基础 IR → 复用入口 → **Gherkin 变异**（只变异示例值，非源码）→ runner adapter → killed/survived/error 报告。含 parser-spec / ir-dry-checker-spec / acceptance-generator / mutator-spec 四份规格；项目专用组件（入口生成器/runtime/step handlers/adapter）由 agent 写。
+- **校准动作**：`roles/QA.prompt` 补"验收流水线（对齐 APS 规格）"一节（两条运行链 + 步骤文本 DRY 规范化：duplicate-in-scenario/near-duplicate/possible-synonym + 目的：示例数据真的连到被测应用）。APS 亦可为后续"验收测试进入生成骨架"提供安装流程参考。
 
-### P4：吸收 negative-test-experiment 数据佐证阈值
+### P4：吸收 negative-test-experiment 数据佐证阈值（✅ 已完成）
 - **仓库**：unclebob/negative-test-experiment（Clojure，19★）——"8 次独立 Hunt the Wumpus 实验：测试纪律 × CRAP"。
-- **理由**：THEORY.md 的 CRAP 阈值（人 ≤4 / agent 6~8、≥30 危险）有 Bob 原话依据；该实验仓库提供可追溯的实验数据，可增强论证。
-- **动作**：读实验 README/数据，将可用证据并入 THEORY.md 并标注来源。
+- **已核验数据（experiment-abstract/conclusion/summary）**：4 种测试纪律 × CRAP 强制开关 = 8 棵独立程序树，全部通过 25/25 验收（含零单元测试组）——**验收容易满足、对套件质量无感知**；CRAP-on 只做两件事（拆分高 CC 函数至 CC≤3 + 补测试，None 组凭空造 40 examples/150 assertions），买覆盖率、花可读性、不改善设计；clj-mutate 对冻结程序长出 operator 测试套（9-63 examples/55-119 sites，~0.06-0.09 s），等价变异体实案：`1→0` 打在父 if/cond 行、字面量在子分支 → no-op。
+- **动作**：THEORY.md §3.1 补 CRAP 实验证据（含 C²+C 无覆盖率不可用、规模膨胀数据）、§3.2 补变异实验证据（第二套测试、等价变异体案例、验收局限）；TERMS.md 新增"等价变异体"条目。
 
 ### P5：一键质检脚本 quality-check.sh + 生成器语言收敛（✅ 已完成）
 - **现状**：四件套检查命令分散在生成项目的 quality-gates/ 配置 + ci.yml 中，无"一条命令全检"脚本；generate-project.sh 语言清单**已随 P1 收敛**为 TypeScript/Go/Rust/Python。
@@ -84,3 +84,5 @@
 - 2026-10-08：P1 解耦重构实施完成——gates.yaml + 4 张 tools/<语言>.yaml + ci.yml 占位符模板 + 生成器注入逻辑改造；实测 TS/Rust 两个 demo 生成验证通过（无残留占位符、映射表按语言裁剪）。
 - 2026-10-08：P2 DRY 调研完成并落地（抓取官方 README 核验）：**dryer 为多语言版**（支持 Go/TypeScript/Rust/Python，Jaccard 结构指纹 + --threshold/--edn/--min-lines），更正此前"TS/Rust 无 Bob DRY 工具"的判断；dry4go 作 Go 专用备选。4 张映射表写入 dry_* 字段。
 - 2026-10-08：P5 一键质检脚本 quality-check.sh 完成——读映射表自动拼装四件套命令 + 阈值判定，支持 --list/--with-dry/语言自动推断；实测三语言 + 项目内自动推断验证通过（修复 bash 3.2 全角字符变量名坑）。P2/P5 全部完成，ROADMAP 仅剩 P3（Acceptance-Pipeline-Specification 模板校准）、P4（negative-test-experiment 数据佐证阈值）。
+- 2026-10-08：P3 完成（核验 APS 规格 README/四份规格清单）：QA.prompt 补"验收流水线（对齐 APS）"（feature→IR→入口生成→run + Gherkin 变异链 + 步骤文本 DRY 检查四类发现）。
+- 2026-10-08：P4 完成（核验 abstract/conclusion/summary 全文数据）：THEORY.md §3.1/§3.2 补 8 次实验证据（CRAP 买覆盖率花可读性不改善设计、C²+C 无覆盖不可用、operator 测试套、等价变异体 no-op 案例、验收对套件质量无感知）；TERMS.md 新增等价变异体条目。**至此 P1-P5 全部完成。**

@@ -33,6 +33,7 @@ CC = 圈复杂度（决策点 + 1）；coverage = 覆盖率（0~1）
 - 分数含义：1-5 干净，5-30 中等（重构或补测试），30+ 高风险（又复杂又没测试）。〔官方：crap4clj README〕
 - Bob 的调整：Agent 能承受的复杂度高于人类（"长程记忆"比人好，能同时记住几十个变量），**人要 CRAP ≤ 4，给 agent 放宽到 6、甚至考虑 8**——阈值要调，不是一刀切。〔原稿〕
 - 工具：`crap4clj`（Clojure）、`crapper`（Clojure/Java/Go/TS/Rust/Python 多语言版，Python 实现）。〔官方〕
+- **实验证据（2026-10-08 核验 unclebob/negative-test-experiment）**：Bob 做 8 次独立 Hunt the Wumpus（4 种测试纪律 × CRAP 强制开关，全部通过 25/25 验收）。CRAP-on 的动作 = **拆分高 CC 函数（直到每个函数 CC ≤ 3）+ 补测试**（覆盖率不足时 CRAP ≥ 4 就补）；对"零测试"组 CRAP 不得不凭空造整套测试（40 examples/150 assertions），印证 `CRAP(m)=C²+C` 在无覆盖率时不可用。效果：**买覆盖率**（None 组 Coverage 1→5）、**花可读性**（全部 CRAP-on 行 Cleanliness 仅 1~2）、**不改善设计**（Design 评分无一行提升）。规模对比：CRAP-off 331-396 行/33-52 函数 vs CRAP-on 478-603 行/86-118 函数——阈值强制会显著膨胀函数数量。〔官方：negative-test-experiment experiment-conclusion.md〕
 
 ### 3.2 变异测试（Mutation Testing）
 
@@ -41,6 +42,7 @@ CC = 圈复杂度（决策点 + 1）；coverage = 覆盖率（0~1）
 - 测试失败 = 变异体**被杀**（测试真的守住了这条行为）；测试全绿 = 变异体**存活**（这条行为根本没有测试在保护，是覆盖盲区）。〔视频/原稿〕
 - Bob 的做法：以前跑一整晚（单次几分钟、几百个变异体），现在 agent **30 秒跑完**，还能把测试漏洞补上。〔原稿〕
 - 进阶：**Gherkin 变异**——连 .feature 文件一起变异（改 Given/Then 值、删场景），验证每个验收场景真的执行了代码。〔官方：swarm-forge README / 社区复现〕
+- **实验证据（同一实验）**：对 8 个冻结程序跑 clj-mutate——变异针对现有程序长出"**第二套测试**"（operator tests：`if`/`if-not`、`=`/`not=`、`1`/`0` 翻转，纪律套件常常没命名这些），9-63 examples、133-257 assertions、55-119 sites，墙钟仅 ~0.06-0.09 s；**等价变异体具体案例**：clj-mutate 把 `1→0`（布尔翻转）打在父 `if`/`cond` 行上，而字面量在后面的分支 → 文本替换是 no-op，手改真实字面量即杀死。另：同一验收脚本对 8 个程序全部 25/25——**验收容易满足、对套件质量无感知**（零单元测试组也过），不能替代单元/变异关卡。〔官方：negative-test-experiment experiment-conclusion.md〕
 - 工具：`clj-mutate`（Clojure）、`mutator`（多语言版）。〔官方〕
 
 ### 3.3 架构约束

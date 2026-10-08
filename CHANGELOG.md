@@ -6,6 +6,10 @@
 > **读者**：AI代理+人类
 
 > 本文档记录项目的所有重要变更，遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/) 格式。
+
+### 变更
+- **P3 验收流水线规格校准（完成）**：核验 unclebob/Acceptance-Pipeline-Specification（190★）README 与四份规格清单（parser/ir-dry-checker/acceptance-generator/mutator）；QA.prompt 补"验收流水线（对齐 APS 规格）"一节——正常验收链（feature→JSON IR→可选 IR-DRY→验收入口→runner）与验收变异链（基础 IR→复用入口→Gherkin 变异→runner adapter→killed/survived/error）+ 步骤文本 DRY 检查（duplicate-in-scenario/near-duplicate/possible-synonym）。
+- **P4 实验数据佐证阈值（完成）**：核验 unclebob/negative-test-experiment 三份实验文档（abstract/conclusion/summary，8 次独立 Hunt the Wumpus：测试纪律×CRAP）；THEORY.md §3.1 补 CRAP 实验证据（CRAP-on=拆 CC≤3+补测试；买覆盖率/花可读性/不改善设计；C²+C 无覆盖率不可用；331-396 行→478-603 行膨胀）、§3.2 补变异实验证据（operator 第二套测试 9-63 examples/55-119 sites；等价变异体 `1→0` no-op 案例；验收 25/25 全过对套件质量无感知）；TERMS.md 新增"等价变异体"条目。**至此 P1-P5 全部完成。**
 > 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
 ---
