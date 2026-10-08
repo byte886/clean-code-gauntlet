@@ -122,3 +122,7 @@
   - 修复两处：① 原 Go job 工具路径 `../.$RUNNER_TEMP/...` 拼接错误（$RUNNER_TEMP 为绝对路径应直接引用，此前该步可能未真正执行）；② TS job 独立安装依赖步骤漏 cd examples/demo-ts（仓库根无 package.json → ENOENT）。
   - #22：README 补 examples 四语言示例表与端到端实战项目（csv2md）说明；generated/ 旧 demo（demo-cart/demo-gen/demo-go）清理（已被 examples 吸收），保留 csv2md。
   - **至此四步（端到端实战→上游变更实测→TS/Rust CI 实测→小收尾）全部完成**，主目标闭环：生成器可生成新项目、六维度质检四语言真跑通、CI 三语言实测全绿、上游变更可检测迭代。
+- 2026-10-09：**Python CI 实测（最后一块拼图，四语言 CI 全绿收尾）**——
+  - 仓库根 workflow 加 py-* 4 job（CRAP/变异/覆盖率/架构），实测全绿（py-mutation 25s、py-crap 18s、py-coverage 10s、py-architecture 6s）。
+  - 关键修正（回流模板）：crapper 对 Python 用**系统 python3** 跑 `coverage run --source=src -m pytest`，需先 `pip install pytest coverage`（模板 python.yaml 的 crap_ci_cmd/coverage_install 同步补齐；架构 import-linter 契约在 pyproject.toml [tool.importlinter]）。
+  - **至此四语言（Python/Go/TS/Rust）CI 全部在 GitHub Actions 实测全绿（15 job）**，六维度工具链本地+CI 双通道闭环。

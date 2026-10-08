@@ -49,3 +49,6 @@
 ### 变更
 - **TS/Rust GitHub Actions 实测完成（三语言 11 job 全绿）**：仓库根 workflow（examples-demo-quality-gates）扩展 ts-*/rust-* 组（CRAP/变异/覆盖率/架构），复用 examples/demo-ts 与 demo-rust 六维度命令；Rust coverage job 补 `rustup component add llvm-tools-preview`。修复：① Go job 工具路径 `../.$RUNNER_TEMP` 拼接 bug（绝对路径直接引用）；② TS job 安装依赖步骤漏 cd。实测：ts-mutation 38s、rust-mutation 1m47s，11 job 全部 ✓。
 - **小收尾**：README 补 examples 四语言示例对照表与端到端实战项目（generated/csv2md → byte886/csv2md）说明；generated/ 旧 demo 清理（demo-cart/demo-gen/demo-go 已被 examples 吸收）。
+
+### 变更
+- **Python CI 实测完成（四语言 CI 全绿收尾）**：仓库根 workflow（examples-demo-quality-gates）加 py-* 组（CRAP/变异/覆盖率/架构），15 job 全绿（py-mutation 25s）。修正：crapper 对 Python 用系统 python3 跑 pytest/coverage，模板 python.yaml 的 `crap_ci_cmd`（`pip install pytest coverage && crapper`）与 `coverage_install`（`pip install pytest coverage`）补齐；examples/demo-python workflow 同步。至此四语言本地六维度 + CI 双通道全部实测通过。
