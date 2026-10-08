@@ -91,4 +91,10 @@
   - **实测事实**：CRAP 5 函数 CC≤5/cov 100%/CRAP≤5（阈值 30/8 全过）；变异 17 sites 16 杀 1 活 94.1%（剩 1 个等价变异体 `base > 0`→`>=`，base=0 数学等价，人工核验豁免）；覆盖率 100%；架构 2 契约 KEPT（Layers + Tests do not leak）；DRY 0 候选。
   - **三处修正回流**：① crapper/mutator **不是 PyPI 包**（pipx 无效），正解=克隆仓库跑 `./crapper`/`./mutator`（首跑自动建 .venv，mutator 需 crapper 相邻）→ 4 张映射表 install/cmd 全部 vendor 化 + install-tools.sh 补 dryer；② crapper 的 pytest 检测=项目根有 pytest.ini/conftest.py 或配置文件含 "pytest" 字样 → 生成器 Python 骨架自动写 pyproject.toml（pytest 声明 + coverage + import-linter 契约 + include_external_packages=true，后者为 forbidden 外部模块契约必需）；③ 三工具经 tree_sitter_language_pack 从 GitHub（xberg-io releases）下载语法包，国内直连超时（PackConfig 无源覆盖）→ `tooling/bin/patch-treesitter.sh`：独立语法包优先（PyPI 镜像）+ 装进各 .venv（mutator 自用 .venv 跑 pytest，需另装 pytest/coverage）。
   - **机制新增**：等价变异体人工核验豁免——EQUIVALENT-MUTANTS.md 清单 + quality-check.sh `--equiv-ok`（mutator 退出码 3 豁免）。
-  - **已知遗留**：generated/ 是否保留示例待用户拍板；其他语言（TS/Go/Rust）vendor 工具真装真跑未验证（接线层已造，命令口径同 python 实测）；ci.yml 的 CI 内联 vendor clone 未在真实 GitHub Actions 上跑过；quality-check.sh 的 `--stage commit` 在真实项目验证过 --list 但未跑全维度。
+  - **已知遗留**：generated/ 是否保留示例待用户拍板；quality-check.sh 的 `--stage commit` 在真实项目验证过 --list 但未跑全维度。
+- 2026-10-09：**落地 3-Go（跨语言验证）+ GitHub Actions 实测完成**——
+  - **Go demo（examples/demo-go 入库）六维度全 PASS**：CRAP 全过（CC≤5/CRAP≤5，cov 100%）；变异 89.5%（17 杀 15 活 2 = 等价变异体：`base>0`→`>=` 与 `qty<=0`→`<`，人工核验豁免）；覆盖率 100%；架构 go-arch-lint check OK；DRY dry4go 0 候选。
+  - **实测修正（跨语言通用性验证）**：① Go 测试须同包 src/ 目录（生成器 test/ 目录分离仅 Python 适用）；② go-arch-lint v1.19.0 配置为 v3 格式（components 为 map + deps.mayDependOn/anyProjectDeps），命令需 `check` 子命令，Go 1.22 可安装运行（推翻调研时"需 Go 1.25+"判断）；③ GOPATH/bin 不在默认 PATH → Go 映射表 architecture/dry 命令改 `$(go env GOPATH)/bin/...` 完整路径（eval 展开，不依赖用户 PATH）；④ dry4go 实测可用（Go DRY 主选保持正确）。
+  - **生成器修正**：ci.yml 生成时移动到 `.github/workflows/quality-gates.yml`（GitHub Actions 只识别仓库根 .github/workflows/，原 quality-gates/ 位置不会被 CI 执行）。
+  - **CI 实测结论**：仓库根 `.github/workflows/examples-demo-go-quality-gates.yml` 五 job 全绿（CRAP 24s / 变异 25s / 覆盖率 22s / 架构 1m18s / DRY 25s）；CI 内联 vendor 克隆 + 工具安装 + 六维度命令在真实 GitHub Actions（ubuntu-latest）可用。**关键坑**：GitHub Actions 默认 shell 为 `bash -e`（set -e），mutator 退出码 3 时脚本立即终止、豁免分支永不执行 → mutation job 需 `set +e` 包住 mutator 调用再恢复（已修 ci.yml 模板 + examples + 仓库根自测 workflow 三处）。
+  - **已知遗留**：TS/Rust 仍未真装真跑；examples/demo-go 的 .github/workflows 在真实独立仓库（项目推到自己仓库根）尚未验证触发。
