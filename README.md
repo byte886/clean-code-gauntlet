@@ -81,8 +81,22 @@ clean-code-gauntlet/
 ├── docs/            # 知识层：理论手册、术语表、SOP、上游追踪、ADR
 ├── tooling/         # 工具层：上游工具卡、安装器、项目生成器
 ├── templates/       # 新项目模板（宪法/角色/质量关卡）
+├── examples/        # 四语言示例项目（真装真跑验证过的成品）
 └── scripts/         # 上游追踪等维护脚本
 ```
+
+**示例项目（examples/，四语言全链路真跑通的对照）**：
+
+| 目录 | 语言 | 变异成绩 | 说明 |
+|------|------|---------|------|
+| examples/demo-python | Python | 94.1%（1 等价） | 购物车 demo + pyproject（crapper 识别 pytest 依赖） |
+| examples/demo-go | Go | 89.5%（2 等价） | 购物车 demo + .go-arch-lint.yml（v3 格式） |
+| examples/demo-ts | TypeScript | 90.5%（2 等价） | 购物车 demo + vitest LCOV + .dependency-cruiser.cjs |
+| examples/demo-rust | Rust | 93.8%（1 等价） | 购物车 demo + Cargo.toml/lib.rs/architecture.json |
+
+每份示例含：README（踩坑记录）、EQUIVALENT-MUTANTS.md（等价变异体豁免清单）、quality-gates/、`.github/workflows/quality-gates.yml`（可在独立仓库触发）。运行产物（node_modules/coverage/.metrics/target）不入库。
+
+**端到端实战示例**：`generated/csv2md/`（TS，CSV→Markdown 表格）——由生成器生成、六维度全 PASS（变异 21/21 100% 无等价）、已推 GitHub（[byte886/csv2md](https://github.com/byte886/csv2md)），其自带 CI 在独立仓库实测全绿。
 
 **详细结构**：[docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
 
