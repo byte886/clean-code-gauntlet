@@ -95,7 +95,9 @@ jobs:
           git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
           cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
       - name: 安装项目测试依赖（crapper 需 npm run coverage 拿真实覆盖率）
-        run: npm install
+        run: |
+          cd examples/demo-ts
+          npm install
       - name: CRAP gate（在 examples/demo-ts 内运行）
         run: |
           cd examples/demo-ts
@@ -112,7 +114,9 @@ jobs:
           cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
           .venv/bin/pip install pytest coverage
       - name: 安装项目测试依赖（crapper 需 npm run coverage 拿真实覆盖率）
-        run: npm install
+        run: |
+          cd examples/demo-ts
+          npm install
       - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
         run: |
           cd examples/demo-ts
