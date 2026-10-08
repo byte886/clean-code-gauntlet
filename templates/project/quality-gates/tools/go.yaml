@@ -5,12 +5,12 @@
 language: go
 
 crap_tool: crapper
-crap_install: pipx install crapper
-crap_cmd: crapper ./...
+crap_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+crap_cmd: <GAUNTLET_DIR>/tooling/vendor/crapper/crapper
 
 mutation_tool: mutator
-mutation_install: pipx install mutator
-mutation_cmd: mutator --source . --tests .
+mutation_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+mutation_cmd: <GAUNTLET_DIR>/tooling/vendor/mutator/mutator
 
 coverage_tool: go-cover
 coverage_install: go version

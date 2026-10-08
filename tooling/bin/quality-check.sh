@@ -9,6 +9,7 @@
 #   quality-check.sh --stage merge [语言]          # 跑 commit+merge 级关卡（四件套，合并/发布前；默认）
 #   quality-check.sh --list [--stage X] [语言]     # 只打印将执行的命令，不执行
 #   quality-check.sh --with-dry [语言]             # 额外执行 DRY 重复代码维度（可选，merge 阶段生效）
+#   quality-check.sh --equiv-ok [语言]             # 变异存活均已在 EQUIVALENT-MUTANTS.md 人工核验为等价变异体时，允许退出码 3 视为通过
 # 语言推断：命令行参数 > 当前目录 quality-gates/tools/*.yaml（生成项目只有一张）> 模板默认
 # 触发时机：与 gates.yaml 的 when 字段一致（commit/merge/optional/on-demand）
 # 退出码：任一维度失败 → 1；全部通过 → 0
@@ -19,6 +20,7 @@ REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 TPL_TOOLS="$REPO_ROOT/templates/project/quality-gates/tools"
 MODE="run"
 WITH_DRY=0
+EQUIV_OK=0
 STAGE="merge"
 
 # ---- 参数解析 ----
@@ -27,6 +29,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --list) MODE="list"; shift ;;
     --with-dry) WITH_DRY=1; shift ;;
+    --equiv-ok) EQUIV_OK=1; shift ;;
     --stage)
       STAGE="${2:-merge}"
       case "$STAGE" in
@@ -66,6 +69,11 @@ MUTATE_CMD="$(get_yaml "$TOOLS_YAML" mutation_cmd)"
 COV_CMD="$(get_yaml "$TOOLS_YAML" coverage_cmd)"
 ARCH_CMD="$(get_yaml "$TOOLS_YAML" architecture_cmd)"
 DRY_CMD="$(get_yaml "$TOOLS_YAML" dry_cmd)"
+
+# 映射表命令里的 <GAUNTLET_DIR> 占位符 → 运行时替换为仓库根（bash 3.2 兼容 ${var//}）
+for v in CRAP_CMD MUTATE_CMD COV_CMD ARCH_CMD DRY_CMD; do
+  eval "$v=\"\${$v//<GAUNTLET_DIR>/$REPO_ROOT}\""
+done
 
 echo "=============================================="
 echo " clean-code-gauntlet 质量检查（${LANG_NAME}）"
@@ -108,8 +116,13 @@ for dim in "${DIMS[@]}"; do
   if eval "$cmd"; then
     echo "    ✓ PASS"
   else
-    echo "    ✗ FAIL（退出码 $?）"
-    FAILED=1
+    code=$?
+    if [ "$name" = "变异测试" ] && [ "$code" -eq 3 ] && [ "$EQUIV_OK" -eq 1 ] && [ -f "$PWD/EQUIVALENT-MUTANTS.md" ]; then
+      echo "    ✓ PASS（退出码 3：有存活变异体，但均已人工核验为等价变异体，见 EQUIVALENT-MUTANTS.md）"
+    else
+      echo "    ✗ FAIL（退出码 ${code}）"
+      FAILED=1
+    fi
   fi
 done
 

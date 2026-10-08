@@ -91,6 +91,13 @@ cp -R "$TPL_DIR/." "$OUT_DIR/"
 # 额外目录
 mkdir -p "$OUT_DIR/src" "$OUT_DIR/test"
 
+# Python 骨架：pyproject.toml（pytest 声明 + coverage + import-linter 契约，落地 3 实测口径）
+if [ "$PROJ_LANG" = "python" ]; then
+  echo "  （python 骨架：保留 pyproject.toml 质量门配置）"
+else
+  rm -f "$OUT_DIR/pyproject.toml"
+fi
+
 # 替换占位符（分隔符统一用 |；替换文本先转义 & \ |，防止映射表命令中的特殊字符被 sed 吞掉）
 esc_sed() {
   printf '%s' "$1" | sed 's/[&\\|]/\\&/g'

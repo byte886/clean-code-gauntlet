@@ -18,6 +18,7 @@ REPOS=(
   "clj-mutate master"
   "mutator main"
   "uml-viewer master"
+  "dryer main"
 )
 
 echo "==> 检查前置依赖"

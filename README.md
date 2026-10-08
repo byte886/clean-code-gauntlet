@@ -56,10 +56,20 @@
 # 1. 安装上游工具（vendor 模式，不 fork）
 tooling/bin/install-tools.sh
 
-# 2. 生成一个新项目（问答式）
+# 2. 网络受限环境补丁（可选但推荐）
+#    crapper/mutator/dryer 需从 GitHub 下载 tree-sitter 语法包，直连常超时；
+#    本补丁改为优先用 PyPI 独立语法包（国内镜像可装）。GitHub 可达的环境可跳过。
+#    注意：重跑 install-tools.sh（fetch 覆盖源码）后需重跑本脚本。
+tooling/bin/patch-treesitter.sh
+
+# 3. 生成一个新项目（问答式）
 tooling/bin/generate-project.sh
 
-# 3. 检查 Bob 上游仓库是否有更新
+# 4. 在生成项目内一键质检（六维度：CRAP/变异/覆盖率/架构/DRY）
+cd generated/<your-project>
+../../tooling/bin/quality-check.sh --with-dry --equiv-ok
+
+# 5. 检查 Bob 上游仓库是否有更新
 scripts/upstream-sync.sh
 ```
 

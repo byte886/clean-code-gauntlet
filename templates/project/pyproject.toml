@@ -1,0 +1,29 @@
+# clean-code-gauntlet 生成器写入 — Python 项目质量门配置
+# 依据：落地 3 demo（demo-cart）实测口径
+#   · crapper 检测 pytest：项目根存在 pytest.ini / conftest.py，或配置文件含 "pytest" 字样
+#   · lint-imports forbidden 外部模块契约：需顶层 include_external_packages = true
+#   · coverage：coverage run -m pytest 默认统计被测模块；配置 source 精确限定 src
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+
+[tool.coverage.run]
+source = ["src"]
+
+[tool.coverage.report]
+fail_under = 80
+
+[tool.importlinter]
+root_packages = ["src"]
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Layers"
+type = "layers"
+layers = ["src"]
+
+[[tool.importlinter.contracts]]
+name = "Tests do not leak into src"
+type = "forbidden"
+source_modules = ["src"]
+forbidden_modules = ["test"]

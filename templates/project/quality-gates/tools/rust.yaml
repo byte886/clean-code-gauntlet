@@ -5,12 +5,12 @@
 language: rust
 
 crap_tool: crapper
-crap_install: pipx install crapper
-crap_cmd: crapper src/
+crap_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+crap_cmd: <GAUNTLET_DIR>/tooling/vendor/crapper/crapper
 
 mutation_tool: mutator
-mutation_install: pipx install mutator
-mutation_cmd: mutator --source src --tests tests
+mutation_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+mutation_cmd: <GAUNTLET_DIR>/tooling/vendor/mutator/mutator
 
 coverage_tool: cargo-llvm-cov
 coverage_install: cargo install cargo-llvm-cov
@@ -28,8 +28,8 @@ optional_cmd: cargo modules dependencies --lib --acyclic
 
 # DRY 维度（可选）：dryer（Bob 多语言版，支持 Rust；已核验 README：函数与方法按结构指纹比对，跳过 mod tests 与闭包）
 dry_tool: dryer
-dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
-dry_cmd: dryer --edn src/
+dry_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+dry_cmd: <GAUNTLET_DIR>/tooling/vendor/dryer/dryer --edn src/
 
 # 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
 # 覆盖率：cargo-tarpaulin（cargo-llvm-cov 之外的主流）

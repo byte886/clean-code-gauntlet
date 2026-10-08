@@ -5,12 +5,12 @@
 language: typescript
 
 crap_tool: crapper
-crap_install: pipx install crapper
-crap_cmd: crapper src/
+crap_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+crap_cmd: <GAUNTLET_DIR>/tooling/vendor/crapper/crapper
 
 mutation_tool: mutator
-mutation_install: pipx install mutator
-mutation_cmd: mutator --source src --tests test
+mutation_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+mutation_cmd: <GAUNTLET_DIR>/tooling/vendor/mutator/mutator
 
 coverage_tool: c8
 coverage_install: npm i -D c8
@@ -28,8 +28,8 @@ optional_cmd: npx archlint check src
 
 # DRY 维度（可选）：dryer（Bob 多语言版，支持 TypeScript；已核验 README：Jaccard 结构指纹 + --threshold/--edn/--min-lines）
 dry_tool: dryer
-dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
-dry_cmd: dryer --edn src/
+dry_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
+dry_cmd: <GAUNTLET_DIR>/tooling/vendor/dryer/dryer --edn src/
 
 # 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
 # 复杂度：eslint + eslint-plugin-complexity（圈复杂度检查）
