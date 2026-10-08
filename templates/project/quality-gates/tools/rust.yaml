@@ -31,4 +31,10 @@ dry_tool: dryer
 dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
 dry_cmd: dryer --edn src/
 
+# 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
+# 覆盖率：cargo-tarpaulin（cargo-llvm-cov 之外的主流）
+# 变异：cargo-mutants（mutator 之外的 Rust 生态）
+# 架构：cargo-modules（已列 optional；可视化 + 循环检测 + 孤儿文件）
+# DRY：dryer 主选；暂无其他成熟 Rust DRY 工具
+
 note: "cargo-archtest-cli 支持 MayOnlyAccess/MayNotAccess/循环检测/外部 crate 白黑名单；architecture.json 声明 layer_names 与 access_rules"

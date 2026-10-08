@@ -31,4 +31,10 @@ dry_tool: dry4go
 dry_install: go install github.com/unclebob/dry4go/cmd/dry4go@latest
 dry_cmd: dry4go --json .
 
+# 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
+# 复杂度：gocyclo（圈复杂度单工具）
+# 覆盖率：go test -coverprofile（内置，可出文件）
+# 架构：arch-go（已列 optional；规则更宽，可集成 go test）
+# DRY：dryer（Bob 多语言版，亦支持 Go）
+
 note: "go-arch-lint 需 Go 1.25+；architecture_config 内声明 components 与 mayDependOn"

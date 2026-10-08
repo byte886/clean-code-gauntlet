@@ -26,4 +26,10 @@ dry_tool: dryer
 dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
 dry_cmd: dryer --edn src/
 
+# 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
+# 复杂度：radon（CC/CRAP 单工具）
+# 覆盖率：pytest-cov（coverage.py 的 pytest 集成）
+# 变异：mutmut（mutator 之外的 Python 生态）
+# 架构：import-linter 主选；大型仓库可加 pydeps 做依赖可视化
+
 note: "import-linter 契约在 pyproject.toml 的 [tool.importlinter] 下声明（root_packages + contracts）"

@@ -86,3 +86,4 @@
 - 2026-10-08：P5 一键质检脚本 quality-check.sh 完成——读映射表自动拼装四件套命令 + 阈值判定，支持 --list/--with-dry/语言自动推断；实测三语言 + 项目内自动推断验证通过（修复 bash 3.2 全角字符变量名坑）。P2/P5 全部完成，ROADMAP 仅剩 P3（Acceptance-Pipeline-Specification 模板校准）、P4（negative-test-experiment 数据佐证阈值）。
 - 2026-10-08：P3 完成（核验 APS 规格 README/四份规格清单）：QA.prompt 补"验收流水线（对齐 APS）"（feature→IR→入口生成→run + Gherkin 变异链 + 步骤文本 DRY 检查四类发现）。
 - 2026-10-08：P4 完成（核验 abstract/conclusion/summary 全文数据）：THEORY.md §3.1/§3.2 补 8 次实验证据（CRAP 买覆盖率花可读性不改善设计、C²+C 无覆盖不可用、operator 测试套、等价变异体 no-op 案例、验收对套件质量无感知）；TERMS.md 新增等价变异体条目。**至此 P1-P5 全部完成。**
+- 2026-10-08：**落地 4（项目裁剪讨论）四项决策落档**——① 工具齐全+可选：每语言映射表补"可选工具清单"段（社区备选按需选用，主命令不变，quality-check.sh 只跑主命令）；② 关卡按成本裁剪：gates.yaml 每维度加 `when` 四档（commit/merge/optional/on-demand），quality-check.sh 新增 `--stage commit|merge`（commit=CRAP+覆盖率，merge=四件套+可选 DRY）——低成本高收益天天跑、贵的高收益关键时刻跑；③ 阈值默认 Bob 建议值写入配置（人 ≤4 / agent 6~8、覆盖率底线 ≥80%），使用中发现不对再按建议调整；④ 多 Agent 流水线判为有价值（on-demand），用户测试/评估体系时启用。

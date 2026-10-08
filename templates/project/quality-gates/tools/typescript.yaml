@@ -31,4 +31,10 @@ dry_tool: dryer
 dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
 dry_cmd: dryer --edn src/
 
+# 可选工具清单（社区备选，按需选用；主命令见上方 *_cmd，quality-check.sh 只跑主命令）
+# 复杂度：eslint + eslint-plugin-complexity（圈复杂度检查）
+# 覆盖率：nyc（c8 之外的备选）
+# 变异：Stryker（mutator 之外的 JS/TS 生态主流）
+# 架构：archlint（28+ detectors：循环依赖/上帝模块/层违规，已列 optional）
+
 note: "crapper/mutator 为 Bob 多语言版（Python 实现），支持 TypeScript"
