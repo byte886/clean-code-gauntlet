@@ -18,12 +18,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install crapper（vendor 模式）
         run: |
-          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
-          cd .gauntlet/crapper && ./crapper --help
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
       - name: CRAP gate（在 examples/demo-go 内运行）
         run: |
           cd examples/demo-go
-          ../../.gauntlet/crapper/crapper
+          ../.$RUNNER_TEMP/gauntlet/crapper/crapper
 
   mutation:
     runs-on: ubuntu-latest
@@ -31,15 +31,17 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install mutator（vendor 模式，自用 .venv 跑测试）
         run: |
-          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
-          git clone --depth 1 https://github.com/unclebob/mutator.git .gauntlet/mutator
-          cd .gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
+          cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
           .venv/bin/pip install pytest coverage
+      - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
+        run: $RUNNER_TEMP/gauntlet/crapper/crapper
       - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免）
         run: |
           set +e
           cd examples/demo-go
-          ../../.gauntlet/mutator/mutator
+          ../.$RUNNER_TEMP/gauntlet/mutator/mutator
           code=$?
           set -e
           if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then

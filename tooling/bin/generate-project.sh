@@ -71,7 +71,7 @@ TOOLS_YAML="$TPL_DIR/quality-gates/tools/$PROJ_LANG.yaml"
 if [ ! -f "$TOOLS_YAML" ]; then
   echo "[失败] 缺少工具映射表 $TOOLS_YAML" >&2; exit 1
 fi
-CRAP_TOOL=$(get_yaml "$TOOLS_YAML" crap_tool);    CRAP_INSTALL=$(get_yaml "$TOOLS_YAML" crap_install);    CRAP_CMD=$(get_yaml "$TOOLS_YAML" crap_cmd)
+CRAP_TOOL=$(get_yaml "$TOOLS_YAML" crap_tool);    CRAP_INSTALL=$(get_yaml "$TOOLS_YAML" crap_install);    CRAP_CMD=$(get_yaml "$TOOLS_YAML" crap_cmd);    CRAP_CI_CMD=$(get_yaml "$TOOLS_YAML" crap_ci_cmd)
 MUTATE_TOOL=$(get_yaml "$TOOLS_YAML" mutation_tool); MUTATE_INSTALL=$(get_yaml "$TOOLS_YAML" mutation_install); MUTATE_CMD=$(get_yaml "$TOOLS_YAML" mutation_cmd)
 COV_TOOL=$(get_yaml "$TOOLS_YAML" coverage_tool);  COV_INSTALL=$(get_yaml "$TOOLS_YAML" coverage_install);  COV_CMD=$(get_yaml "$TOOLS_YAML" coverage_cmd)
 ARCH_TOOL=$(get_yaml "$TOOLS_YAML" architecture_tool); ARCH_INSTALL=$(get_yaml "$TOOLS_YAML" architecture_install); ARCH_CMD=$(get_yaml "$TOOLS_YAML" architecture_cmd)
@@ -195,6 +195,7 @@ replace_placeholders() {
     -e "s|{{CRAP_TOOL}}|$(esc_sed "$CRAP_TOOL")|g" \
     -e "s|{{CRAP_INSTALL}}|$(esc_sed "$CRAP_INSTALL")|g" \
     -e "s|{{CRAP_CMD}}|$(esc_sed "$CRAP_CMD")|g" \
+    -e "s|{{CRAP_CI_CMD}}|$(esc_sed "$CRAP_CI_CMD")|g" \
     -e "s|{{MUTATE_TOOL}}|$(esc_sed "$MUTATE_TOOL")|g" \
     -e "s|{{MUTATE_INSTALL}}|$(esc_sed "$MUTATE_INSTALL")|g" \
     -e "s|{{MUTATE_CMD}}|$(esc_sed "$MUTATE_CMD")|g" \

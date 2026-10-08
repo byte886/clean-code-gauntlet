@@ -2,7 +2,7 @@
 # 生成自 clean-code-gauntlet。
 # 设计说明（落地 3 实测修正）：
 #   · crapper/mutator/dryer 无 PyPI 包，需 vendor 克隆；CI 环境可直连 GitHub，
-#     因此在 CI 内联克隆到 ./.gauntlet/（无需 install-tools.sh，它依赖本地仓库根）。
+#     因此在 CI 内联克隆到 $RUNNER_TEMP/gauntlet/（项目外临时目录，避免 crapper 扫到工具自身源码）。
 #   · 本机一键质检用 quality-check.sh（读 quality-gates/tools/<语言>.yaml 的 *_cmd）。
 #   · 覆盖率/架构工具是 pip/npm/cargo 包，仍由 {{COV_*}}/{{ARCH_*}} 按语言注入。
 
@@ -20,10 +20,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install crapper（vendor 模式，首跑自动建 .venv）
         run: |
-          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
-          cd .gauntlet/crapper && ./crapper --help
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
       - name: CRAP gate（圈复杂度 ≤8 且 CRAP <30，见 gates.yaml）
-        run: ./.gauntlet/crapper/crapper
+        run: $RUNNER_TEMP/gauntlet/crapper/crapper
 
   mutation:
     runs-on: ubuntu-latest
@@ -31,14 +31,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install mutator（vendor 模式；mutator 需 crapper 在相邻目录，且自用 .venv 跑 pytest）
         run: |
-          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
-          git clone --depth 1 https://github.com/unclebob/mutator.git .gauntlet/mutator
-          cd .gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
+          cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
           .venv/bin/pip install pytest coverage
+      - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
+        run: $RUNNER_TEMP/gauntlet/crapper/crapper
       - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免，见 EQUIVALENT-MUTANTS.md）
         run: |
           set +e
-          ./.gauntlet/mutator/mutator
+          $RUNNER_TEMP/gauntlet/mutator/mutator
           code=$?
           set -e
           if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then

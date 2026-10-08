@@ -110,3 +110,10 @@
   - **生成器改进**：Rust 骨架自动生成 Cargo.toml（库 crate）/ src/lib.rs（模块入口占位）/ architecture.json（cargo-archtest-cli 配置）。
   - **至此四语言（Python/Go/TS/Rust）全部真装真跑，落地 3 全量完成**；CI 实测覆盖 Go（仓库根 workflow），TS/Rust 的 CI 命令口径经本地全 PASS 验证（ubuntu 环境自带组件/镜像，预期可跑，未在 Actions 上实测）。
   - **已知遗留**：TS/Rust 的 GitHub Actions 实测未跑（可后续加 job）；examples/demo-* 在真实独立仓库触发未验证；generated/ 旧 demo（demo-cart/demo-gen/demo-go）为 gitignore 本地载体。
+- 2026-10-09：**端到端实战验证（任务 #19，byte886/csv2md 全绿闭环）**——
+  - 用生成器生成真实项目 **csv2md**（TS，CSV→Markdown 表格，12 用例），走完"生成→开发→commit 门→merge 门→推 GitHub（公开）→自带 CI 触发"全流程。
+  - 本地六维度全 PASS，**变异 21/21 全杀 100%（无等价变异体）**——四语言 demo 里唯一满分。
+  - 推 GitHub 后 CI 首跑 3 连败，实测揪出 **3 个 CI 模板级 bug（全部回流模板/映射表/生成器/examples）**：
+    ① **mutation job 必须先跑 crapper**：mutator 覆盖率数据来自 crapper 产物（coverage.load_bundle），不跑则覆盖率空 → 假 FAIL/假 PASS（Go CI 之前"全绿"是豁免掩盖的假 PASS，已同步修复）；② **TS 的 crapper/mutator job 需先 npm install**：crapper 对 TS 用 npm run coverage（vitest），无 node_modules 时覆盖率 0% → CRAP 虚高、mutator 全 uncovered；③ **工具必须 clone 在项目外（$RUNNER_TEMP/gauntlet/）**：clone 在项目内 .gauntlet/ 时 crapper 扫描把工具自身源码当项目一部分，跑工具自带 145 个 pytest（缺 bb/uml）→ exit 2。本机 vendor 在 gauntlet 仓库 tooling/vendor/（天然项目外）所以本地从未暴露。
+  - 模板新增 {{CRAP_CI_CMD}} 注入点（含语言测试依赖安装）；映射表加 crap_ci_cmd 字段（TS=npm install && crapper，Go/Python/Rust=crapper）。
+- 2026-10-09：**剩余任务 #20（upstream-sync 实测）/ #21（TS/Rust CI job 实测）/ #22（README 收尾）待推进**。
