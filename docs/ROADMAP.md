@@ -98,3 +98,9 @@
   - **生成器修正**：ci.yml 生成时移动到 `.github/workflows/quality-gates.yml`（GitHub Actions 只识别仓库根 .github/workflows/，原 quality-gates/ 位置不会被 CI 执行）。
   - **CI 实测结论**：仓库根 `.github/workflows/examples-demo-go-quality-gates.yml` 五 job 全绿（CRAP 24s / 变异 25s / 覆盖率 22s / 架构 1m18s / DRY 25s）；CI 内联 vendor 克隆 + 工具安装 + 六维度命令在真实 GitHub Actions（ubuntu-latest）可用。**关键坑**：GitHub Actions 默认 shell 为 `bash -e`（set -e），mutator 退出码 3 时脚本立即终止、豁免分支永不执行 → mutation job 需 `set +e` 包住 mutator 调用再恢复（已修 ci.yml 模板 + examples + 仓库根自测 workflow 三处）。
   - **已知遗留**：TS/Rust 仍未真装真跑；examples/demo-go 的 .github/workflows 在真实独立仓库（项目推到自己仓库根）尚未验证触发。
+- 2026-10-09：**落地 3-TS（TypeScript 全链路真跑通，examples/demo-ts 入库）**——
+  - **TS demo 六维度全 PASS**：CRAP 全过（CC≤5/CRAP≤5，cov 100%）；变异 90.5%（21 sites 19 杀 2 活 = 等价变异体：`qty<=0`→`<` 与 `base>0`→`>=`，三语言同款边界，人工核验豁免）；覆盖率 100%（vitest v8 + LCOV）；架构 dependency-cruiser 0 违规；DRY dryer 0 候选。
+  - **实测修正（TS 特有坑，全部回流）**：① 测试导入函数名与 vitest 全局 `describe` 冲突 → 业务函数改名（describeAmount）；② **c8 对 vitest 无效**（crapper 源码注释：c8 看不到 vitest worker 进程覆盖率）→ TS 覆盖率命令改 `npx vitest run --coverage`（映射表已改）；③ **vitest 必须显式输出 LCOV**（coverage 默认只有 text 报告，crapper 读 target/coverage 或 coverage/**/lcov.info，否则覆盖率 0 → mutator 全 n/a 假 PASS）→ `reporter: ["text","lcov"]`；④ **ESM 项目配置须 .cjs**（package.json "type":"module" 下 .dependency-cruiser.js 被当 ESM 报错，且报错仍 exit 0 → 架构假 PASS）→ 映射表 config 改 `.dependency-cruiser.cjs`；⑤ **tree-sitter-typescript 旧 API**（0.23.x 无 `language()`，须 `language_typescript()`，否则独立语法包 import 失败走 GitHub 下载超时 fallback）→ patch-treesitter.sh 特判已入。
+  - **生成器改进**：TS 骨架自动生成 package.json（vitest 脚本）/ tsconfig.json / vitest.config.ts（LCOV + thresholds）/ .dependency-cruiser.cjs（"type":"module" 兼容）。
+  - **新增 examples/demo-python 入库**：Python demo（唯一跑通 Python 全链路的成品）收进 examples/，与 Go/TS 形成跨语言三对照。
+  - **已知遗留**：Rust 未真装真跑；TS/Go 的 CI 实测只覆盖 Go（仓库根 workflow）；examples/demo-ts 在真实独立仓库触发未验证。

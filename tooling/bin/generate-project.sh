@@ -98,6 +98,62 @@ else
   rm -f "$OUT_DIR/pyproject.toml"
 fi
 
+# TypeScript 骨架：package.json（vitest 测试 + coverage）、tsconfig、vitest.config（LCOV 输出，
+# crapper/mutator 依赖 target/coverage 或 coverage/**/lcov.info 读覆盖率）、.dependency-cruiser.cjs
+# （"type":"module" 项目里 .js 配置会被当 ESM 报错，须 .cjs）。落地3-TS 实测口径。
+if [ "$PROJ_LANG" = "typescript" ]; then
+  echo "  （typescript 骨架：package.json / tsconfig / vitest.config / .dependency-cruiser.cjs）"
+  cat > "$OUT_DIR/package.json" <<'TSEOF'
+{
+  "name": "{{PACK_NAME}}",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
+  }
+}
+TSEOF
+  cat > "$OUT_DIR/tsconfig.json" <<'TSEOF'
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}
+TSEOF
+  cat > "$OUT_DIR/vitest.config.ts" <<'TSEOF'
+import { defineConfig } from "vitest/config";
+
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: "v8",
+      // crapper/mutator 读 target/coverage 或 coverage/**/lcov.info；必须输出 LCOV
+      reporter: ["text", "lcov"],
+      thresholds: { lines: 80 },
+    },
+  },
+});
+TSEOF
+  cat > "$OUT_DIR/.dependency-cruiser.cjs" <<'TSEOF'
+/** dependency-cruiser 配置：禁止循环依赖（最小架构约束）；"type":"module" 项目须用 .cjs */
+module.exports = {
+  forbidden: [
+    { name: "no-circular", severity: "error", from: {}, to: { circular: true } },
+  ],
+  options: {
+    doNotFollow: { path: "node_modules" },
+  },
+};
+TSEOF
+fi
+
 # 替换占位符（分隔符统一用 |；替换文本先转义 & \ |，防止映射表命令中的特殊字符被 sed 吞掉）
 esc_sed() {
   printf '%s' "$1" | sed 's/[&\\|]/\\&/g'

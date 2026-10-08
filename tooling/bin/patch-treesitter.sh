@@ -16,11 +16,11 @@ set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VENDOR_DIR="$REPO_ROOT/tooling/vendor"
 
-# 各工具：src 相对路径 与 额外 pip 包（独立语法包按目标语言装；python/go 已实测，其余语言按需加）
+# 各工具：src 相对路径 与 额外 pip 包（独立语法包按目标语言装；python/go/ts 已实测，其余语言按需加）
 TOOLS=(
-  "crapper|src/crapper/languages/treesitter.py|tree-sitter-python tree-sitter-go"
-  "mutator|src/mutator/treesitter.py|tree-sitter-python tree-sitter-go pytest coverage"
-  "dryer|src/dryer/treesitter.py|tree-sitter-python tree-sitter-go"
+  "crapper|src/crapper/languages/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript"
+  "mutator|src/mutator/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript pytest coverage"
+  "dryer|src/dryer/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript"
 )
 
 NEW_PARSER_FOR='@lru_cache(maxsize=None)
@@ -40,6 +40,9 @@ def parser_for(language: str):
         try:
             mod = __import__(mod_name)
             fn = getattr(mod, "language", None)
+            if fn is None and language == "typescript":
+                # tree-sitter-typescript ≤0.23 的 API 是 language_typescript()（旧风格）
+                fn = getattr(mod, "language_typescript", None)
             if fn is not None:
                 return Parser(Language(fn()))
         except Exception:
