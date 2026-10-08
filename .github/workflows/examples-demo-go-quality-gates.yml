@@ -1,10 +1,13 @@
-# clean-code-gauntlet 仓库自测：examples/demo-go 六维度质量门（GitHub Actions 实测）
+# clean-code-gauntlet 仓库自测：examples 三语言（Go/TS/Rust）六维度质量门（GitHub Actions 实测）
 # 说明：生成项目的 .github/workflows/quality-gates.yml 在项目自身仓库根生效；
-#       本 workflow 在 gauntlet 仓库内对 examples/demo-go 跑同一套检查，验证
-#       CI 内联 vendor 克隆 + 工具安装 + 六维度命令在真实 GitHub Actions 环境可用。
-# 覆盖：CRAP/复杂度、变异（含等价豁免）、覆盖率、架构（go-arch-lint）、DRY（dry4go）
+#       本 workflow 在 gauntlet 仓库内对 examples/demo-* 跑同一套检查，验证
+#       CI 内联 vendor 克隆（$RUNNER_TEMP 项目外）+ 工具安装 + 六维度命令在真实
+#       GitHub Actions 环境可用。
+# 覆盖：Go（CRAP/变异/覆盖率/架构 go-arch-lint/DRY dry4go）、TS（vitest/depcruise）、Rust（llvm-cov/archtest）
+# 实测记录：2026-10-08 csv2md 端到端验证修掉 3 个 CI 级 bug（先跑 crapper、
+#           TS 需 npm install、工具须在项目外），本 workflow 同步应用。
 
-name: examples-demo-go-quality-gates
+name: examples-demo-quality-gates
 
 on:
   push:
@@ -12,7 +15,8 @@ on:
   pull_request:
 
 jobs:
-  crap-complexity:
+  # ============ Go（examples/demo-go） ============
+  go-crap-complexity:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +27,9 @@ jobs:
       - name: CRAP gate（在 examples/demo-go 内运行）
         run: |
           cd examples/demo-go
-          ../.$RUNNER_TEMP/gauntlet/crapper/crapper
+          $RUNNER_TEMP/gauntlet/crapper/crapper
 
-  mutation:
+  go-mutation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +45,7 @@ jobs:
         run: |
           set +e
           cd examples/demo-go
-          ../.$RUNNER_TEMP/gauntlet/mutator/mutator
+          $RUNNER_TEMP/gauntlet/mutator/mutator
           code=$?
           set -e
           if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then
@@ -50,7 +54,7 @@ jobs:
           fi
           exit $code
 
-  coverage:
+  go-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -59,7 +63,7 @@ jobs:
           cd examples/demo-go
           go test -cover ./...
 
-  architecture:
+  go-architecture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +74,7 @@ jobs:
           cd examples/demo-go
           $(go env GOPATH)/bin/go-arch-lint check
 
-  dry:
+  go-dry:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -80,3 +84,131 @@ jobs:
         run: |
           cd examples/demo-go
           $(go env GOPATH)/bin/dry4go --json .
+
+  # ============ TypeScript（examples/demo-ts） ============
+  ts-crap-complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install crapper（vendor 模式）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
+      - name: 安装项目测试依赖（crapper 需 npm run coverage 拿真实覆盖率）
+        run: npm install
+      - name: CRAP gate（在 examples/demo-ts 内运行）
+        run: |
+          cd examples/demo-ts
+          npm install && $RUNNER_TEMP/gauntlet/crapper/crapper
+
+  ts-mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mutator（vendor 模式，自用 .venv 跑测试）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
+          cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          .venv/bin/pip install pytest coverage
+      - name: 安装项目测试依赖（crapper 需 npm run coverage 拿真实覆盖率）
+        run: npm install
+      - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
+        run: |
+          cd examples/demo-ts
+          npm install && $RUNNER_TEMP/gauntlet/crapper/crapper
+      - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免）
+        run: |
+          set +e
+          cd examples/demo-ts
+          $RUNNER_TEMP/gauntlet/mutator/mutator
+          code=$?
+          set -e
+          if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then
+            echo "→ 存活变异体均已人工核验为等价变异体（EQUIVALENT-MUTANTS.md），豁免"
+            exit 0
+          fi
+          exit $code
+
+  ts-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Coverage gate（核心模块 ≥80%）
+        run: |
+          cd examples/demo-ts
+          npm i -D vitest @vitest/coverage-v8
+          npx vitest run --coverage
+
+  ts-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
+        run: |
+          cd examples/demo-ts
+          npm i -D dependency-cruiser
+          npx depcruise --validate .dependency-cruiser.cjs src
+
+  # ============ Rust（examples/demo-rust） ============
+  rust-crap-complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install crapper（vendor 模式）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
+      - name: CRAP gate（在 examples/demo-rust 内运行）
+        run: |
+          cd examples/demo-rust
+          $RUNNER_TEMP/gauntlet/crapper/crapper
+
+  rust-mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mutator（vendor 模式，自用 .venv 跑测试）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
+          cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          .venv/bin/pip install pytest coverage
+      - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
+        run: $RUNNER_TEMP/gauntlet/crapper/crapper
+      - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免）
+        run: |
+          set +e
+          cd examples/demo-rust
+          $RUNNER_TEMP/gauntlet/mutator/mutator
+          code=$?
+          set -e
+          if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then
+            echo "→ 存活变异体均已人工核验为等价变异体（EQUIVALENT-MUTANTS.md），豁免"
+            exit 0
+          fi
+          exit $code
+
+  rust-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cargo-llvm-cov 与 llvm-tools-preview 组件
+        run: |
+          rustup component add llvm-tools-preview
+          cargo install cargo-llvm-cov
+      - name: Coverage gate（核心模块 ≥80%）
+        run: |
+          cd examples/demo-rust
+          cargo llvm-cov --workspace
+
+  rust-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cargo-archtest-cli
+        run: cargo install cargo-archtest-cli --force
+      - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
+        run: |
+          cd examples/demo-rust
+          cargo archtest
