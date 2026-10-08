@@ -51,6 +51,8 @@
 | docs/reference/README.md | Reference | 理论一手来源目录说明 |
 | docs/reference/uncle-bob-ai-interview-notes.md | Reference | Bob 访谈中文整理稿（八章主线，2026-08-19 LIVE） |
 | docs/reference/software-fundamentals-in-the-age-of-ai-transcript-en.txt | Reference | 同访谈英文逐字稿（YouTube 自动字幕） |
+| docs/reference/there-is-a-pattern-to-follow_[u85ZrRfZDyE]_en.txt | Reference | Bob 访谈英文逐字稿（CTO 播客，"敏捷目的"金句出处） |
+| docs/reference/good-engineer-in-ai-era_[rNdfQ6mRXAQ]_en.txt | Reference | Bob 访谈英文逐字稿（Product Engineer 播客，依赖约束主题） |
 | docs/DOCUMENTATION_MAP.md | Reference | 本文档 |
 | docs/DIRECTORY_STRUCTURE.md | Reference | 目录结构说明 |
 | docs/ADR/001-repo-shape.md | Decision | 仓库形态 ADR |

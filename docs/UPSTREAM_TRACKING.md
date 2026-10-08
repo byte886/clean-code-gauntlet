@@ -29,6 +29,8 @@
 | 日期 | 资料 | 说明 | 存档 |
 |------|------|------|------|
 | 2026-10-08 | Bob 访谈《Software Fundamentals in the Age of AI》（Matt Pocock 频道，56:39，2026-08-19 上传） | 中文整理稿（八章）+ 英文逐字稿；即抖音「大小飞」剪辑版的原始来源 | [docs/reference/](reference/) |
+| 2026-10-08 | Bob 访谈《There's A Pattern To Follow》（u85ZrRfZDyE，CTO 播客） | 英文逐字稿（58,302 字）；"敏捷的目的就是摧毁希望"出处 | [docs/reference/](reference/) |
+| 2026-10-08 | Bob 访谈《当 AI 能写代码时怎样才算好工程师》（rNdfQ6mRXAQ，Product Engineer 播客） | 英文逐字稿（29,158 字）；依赖约束/确定性工具主题 | [docs/reference/](reference/) |
 
 ## 变更日志（上游侧）
 

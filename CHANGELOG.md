@@ -17,6 +17,7 @@
 - THEORY.md 全面校准（标注 `〔原稿〕`）：① 修正变异测试耗时口径（原稿："agent 30 秒跑完"而非"30 分钟完成"）；② 修正速度优势口径（单 agent 比人快 3–5 倍、流水线 4–5 倍）；③ 补全 QA Agent 职责原稿表述（QA 程序→可执行脚本→端到端操作 UI→确定性通过/失败）；④ 补全 §4"放弃 spec"（盖房子比喻、Agent 爱写计划原文）、§5 人的位置（轻量 spot check、不把 TDD 强加给 agent）、§7 新生代忠告重构为原稿五条+学徒制模型、§8 结语出处修正（Bob 自称记不清出处，普遍认为是 Dijkstra 名言）。
 - TERMS.md 校准：CRAP 阈值（人 ≤4、agent 6 可能 8）、TDD"拐杖"说法、来源标注指向 reference/。
 - README.md / DOCUMENTATION_MAP.md 登记新资料。
+- **追加吸收 2 场关联访谈**（同批次下载，未整理中文稿，仅字幕存档）：①《There's A Pattern To Follow》（u85ZrRfZDyE，CTO 播客，58,302 字）——金句"敏捷的目的就是摧毁希望"原始出处；②《当 AI 能写代码时怎样才算好工程师》（rNdfQ6mRXAQ，Product Engineer 播客，29,158 字）——依赖约束工具/确定性工具主题，与仓库同题。均存 `docs/reference/`，UPSTREAM_TRACKING 理论来源表已登记。
 
 ### 变更
 - 初始版本 0.1.0（2026-10-08）：仓库创建。形态=**工具型知识库**（ADR-001）：Bob 确定性质量方法论（CRAP/变异测试/架构约束/多 Agent 流水线）的**理论手册 + 可装配工具层 + 上游追踪机制**三合一。
