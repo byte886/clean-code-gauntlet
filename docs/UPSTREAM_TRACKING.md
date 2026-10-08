@@ -20,6 +20,7 @@
 | unclebob/clj-mutate | master | cea397d | 2026-09-19 |
 | unclebob/mutator | main | c57f038 | 2026-10-03 |
 | unclebob/uml-viewer | master | f65dafe | 2026-10-07 |
+| unclebob/dryer | main | 66ff6d2 | 2026-10-03 |
 
 > 完整 sha 见各版本卡 `tooling/upstream/*.md`；基线由 `scripts/upstream-sync.sh` 自动比对更新，检测到变更即回写版本卡并提示更新本表。
 > 注：crapper 默认分支实测为 **master**（2026-10-08 用 git ls-remote 核实，非 main）。
@@ -37,6 +38,7 @@
 | 日期 | 仓库 | 变更 | 本仓库响应 |
 |------|------|------|-----------|
 | 2026-10-08 | 全部 6 仓 | 首次基线建立（见上表） | — |
+| 2026-10-09 | 机制实测 | upstream-sync 两条路径实测：① 无变更→"已是最新"（真实 API 核对 6 仓）；② 模拟变更（篡改 mutator 版本卡 sha 为全 0）→ 正确检测 ★ 并自动回写真实 sha/updated_at，提示决策流程 | 实测通过，无真实上游变更；同日补齐 dryer 跟踪（7 仓全覆盖，基线 66ff6d2） |
 
 ## 变更响应规则
 

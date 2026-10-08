@@ -42,3 +42,6 @@
 - 上游追踪：`scripts/upstream-sync.sh`（GitHub API 比对默认分支最新 commit sha → 版本卡/基线/CHANGELOG 更新）。
 - 基线：6 个上游仓库默认分支 2026-10-08 状态已记入 `docs/UPSTREAM_TRACKING.md`（swarm-forge f4f5fbc / crap4clj e90be2e / crapper 9f1bead / clj-mutate cea397d / mutator c57f038 / uml-viewer f65dafe）。
 - 脚本兼容性（macOS 自带 bash 3.2）：修复 `${var,,}` 语法不支持（WITH_CI 判断改 case 全量匹配）、`$var` 后紧跟全角字符被误解析为变量名（全部改 `${var}` 大括号形式）、sed 匹配带 `- ` 前缀的版本卡行（`^[- ]*`）。三个脚本均实跑验证通过。
+
+### 变更
+- **上游变更机制实测（scripts/upstream-sync.sh 全路径验证）**：① 无变更路径——6 仓真实 API 核对全部"已是最新"；② 模拟变更路径——篡改 mutator 版本卡 sha 后重跑，正确检测 `★ 有变更` 并自动回写真实 latest_sha/updated_at，输出决策流程提示（更新 UPSTREAM_TRACKING → CHANGELOG → 必要时同步 templates）。**补齐缺口**：upstream-sync 仓库清单从 6 仓补到 7 仓（新增 dryer，与 install-tools.sh 对齐），建立 dryer 基线版本卡（66ff6d2）。机制结论：迭代更新机制可用；真实上游变更时可人工评估变更内容决定是否同步模板。

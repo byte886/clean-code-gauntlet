@@ -6,8 +6,8 @@
 ## 引用信息
 - GitHub: https://github.com/unclebob/mutator
 - 默认分支: main
-latest_sha: c57f03879a08d2afe8c7e044e86c80bb164afd30
-updated_at: 2026-10-03T23:06:14Z
+- latest_sha: c57f03879a08d2afe8c7e044e86c80bb164afd30
+- updated_at: 2026-10-03T23:06:14Z
 
 ## 用途
 变异测试多语言实现：Clojure / Java / Go / TypeScript / Rust / Python 六语言统一变异测试，产出 uml-viewer 可读快照。

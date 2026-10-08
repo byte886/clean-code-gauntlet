@@ -18,6 +18,7 @@ REPOS=(
   "clj-mutate master clj-mutate.md"
   "mutator main mutator.md"
   "uml-viewer master uml-viewer.md"
+  "dryer main dryer.md"
 )
 
 if ! command -v curl >/dev/null 2>&1 || ! command -v python3 >/dev/null 2>&1; then
