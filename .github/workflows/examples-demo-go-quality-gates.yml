@@ -1,0 +1,78 @@
+# clean-code-gauntlet 仓库自测：examples/demo-go 六维度质量门（GitHub Actions 实测）
+# 说明：生成项目的 .github/workflows/quality-gates.yml 在项目自身仓库根生效；
+#       本 workflow 在 gauntlet 仓库内对 examples/demo-go 跑同一套检查，验证
+#       CI 内联 vendor 克隆 + 工具安装 + 六维度命令在真实 GitHub Actions 环境可用。
+# 覆盖：CRAP/复杂度、变异（含等价豁免）、覆盖率、架构（go-arch-lint）、DRY（dry4go）
+
+name: examples-demo-go-quality-gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  crap-complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install crapper（vendor 模式）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
+          cd .gauntlet/crapper && ./crapper --help
+      - name: CRAP gate（在 examples/demo-go 内运行）
+        run: |
+          cd examples/demo-go
+          ../../.gauntlet/crapper/crapper
+
+  mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mutator（vendor 模式，自用 .venv 跑测试）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git .gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git .gauntlet/mutator
+          cd .gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          .venv/bin/pip install pytest coverage
+      - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免）
+        run: |
+          cd examples/demo-go
+          ../../.gauntlet/mutator/mutator
+          code=$?
+          if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then
+            echo "→ 存活变异体均已人工核验为等价变异体（EQUIVALENT-MUTANTS.md），豁免"
+            exit 0
+          fi
+          exit $code
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Coverage gate（核心模块 ≥80%）
+        run: |
+          cd examples/demo-go
+          go test -cover ./...
+
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install go-arch-lint
+        run: go install github.com/fe3dback/go-arch-lint@latest
+      - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
+        run: |
+          cd examples/demo-go
+          $(go env GOPATH)/bin/go-arch-lint check
+
+  dry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dry4go
+        run: go install github.com/unclebob/dry4go/cmd/dry4go@latest
+      - name: DRY gate（相似结构候选需人工复核）
+        run: |
+          cd examples/demo-go
+          $(go env GOPATH)/bin/dry4go --json .

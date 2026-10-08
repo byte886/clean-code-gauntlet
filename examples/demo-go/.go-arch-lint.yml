@@ -1,0 +1,10 @@
+# go-arch-lint 架构约束（v1.19.0 / 配置版本 v3，README 实测核验 2026-10-09）
+# 语法：components 为 map（组件名: { in: 包匹配 }），deps 声明依赖规则
+version: 3
+workdir: .
+components:
+  cart: { in: src }
+deps:
+  cart:
+    # 单包骨架：内部无其他包可依赖 → 放行项目内依赖（多包项目应改为显式 mayDependOn）
+    anyProjectDeps: true

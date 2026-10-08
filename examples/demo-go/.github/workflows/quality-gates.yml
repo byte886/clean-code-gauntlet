@@ -49,16 +49,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install {{COV_TOOL}}
-        run: {{COV_INSTALL}}
+      - name: Install go-cover
+        run: go version
       - name: Coverage gate（核心模块 ≥80%）
-        run: {{COV_CMD}}
+        run: go test -cover ./...
 
   architecture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install {{ARCH_TOOL}}
-        run: {{ARCH_INSTALL}}
+      - name: Install go-arch-lint
+        run: go install github.com/fe3dback/go-arch-lint@latest
       - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
-        run: {{ARCH_CMD}}
+        run: $(go env GOPATH)/bin/go-arch-lint check

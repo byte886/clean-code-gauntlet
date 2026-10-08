@@ -133,8 +133,12 @@ done
 # 工具-语言解耦：只保留当前语言的工具映射表，删除其余语言
 find "$OUT_DIR/quality-gates/tools" -name '*.yaml' ! -name "$PROJ_LANG.yaml" -delete 2>/dev/null || true
 
-# CI 模板按选项保留/删除
-if [ "$WITH_CI" -eq 0 ]; then
+# CI 模板按选项保留/移动：GitHub Actions 只识别 .github/workflows/，
+# 生成时把 quality-gates/ci.yml 移动到标准位置（落地3-Go 实测修正）
+if [ "$WITH_CI" -eq 1 ]; then
+  mkdir -p "$OUT_DIR/.github/workflows"
+  mv "$OUT_DIR/quality-gates/ci.yml" "$OUT_DIR/.github/workflows/quality-gates.yml"
+else
   rm -f "$OUT_DIR/quality-gates/ci.yml"
 fi
 

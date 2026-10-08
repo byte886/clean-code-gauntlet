@@ -1,0 +1,8 @@
+{:entries [
+  {:name "DiscountFor", :namespace "demo-go/src", :complexity 5, :coverage 100.0, :crap 5.0}
+  {:name "Describe", :namespace "demo-go/src", :complexity 4, :coverage 100.0, :crap 4.0}
+  {:name "ApplyCoupon", :namespace "demo-go/src", :complexity 2, :coverage 100.0, :crap 2.0}
+  {:name "FinalTotal", :namespace "demo-go/src", :complexity 2, :coverage 100.0, :crap 2.0}
+  {:name "Subtotal", :namespace "demo-go/src", :complexity 2, :coverage 100.0, :crap 2.0}
+  {:name "round2", :namespace "demo-go/src", :complexity 1, :coverage 100.0, :crap 1.0}
+]}
