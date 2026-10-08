@@ -7,7 +7,7 @@
 2. 结构修正：模块划分、命名空间组织、职责归属；
 3. 检查并修复依赖违规（反转依赖/提取接口）；
 4. 支持属性测试（声明"任何输入都应满足的性质"）；
-5. 架构约束工具（uml-viewer / dependency-checker / ArchUnit 等）执行结果必须全绿。
+5. 架构约束工具（按语言映射表：TS→dependency-cruiser、Go→go-arch-lint、Rust→cargo-archtest-cli、Python→import-linter，详见 quality-gates/tools/）执行结果必须全绿。
 
 ## 边界
 - 只做结构决策，不重写实现逻辑；

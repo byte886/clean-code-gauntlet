@@ -1,0 +1,29 @@
+# 工具映射表 — Python
+# 生成器读取本文件，把实际工具与命令注入 ci.yml 与 quality-gates 说明。
+# 字段：<维度>_tool / <维度>_install / <维度>_cmd；architecture 另含 config 文件名。
+
+language: python
+
+crap_tool: crapper
+crap_install: pipx install crapper
+crap_cmd: crapper src/
+
+mutation_tool: mutator
+mutation_install: pipx install mutator
+mutation_cmd: mutator --source src --tests tests
+
+coverage_tool: coverage.py
+coverage_install: pip install coverage
+coverage_cmd: coverage run -m pytest && coverage report --fail-under=80
+
+architecture_tool: import-linter
+architecture_install: pip install import-linter
+architecture_config: pyproject.toml  # [tool.importlinter] 契约：layers / forbidden
+architecture_cmd: lint-imports
+
+# 可选：DRY 重复代码检查（Bob dry4clj 的 Python 版）
+optional_tool: dryer
+optional_install: pip install dryer
+optional_cmd: dryer src/
+
+note: "import-linter 契约在 pyproject.toml 的 [tool.importlinter] 下声明（root_packages + contracts）"

@@ -13,6 +13,11 @@
 ## [未发布]
 
 ### 变更
+- **P1 解耦重构实施完成（用户决策落地）**：quality-gates 从"绑定 Bob 工具"重构为两层结构——`gates.yaml`（维度+阈值声明，语言无关）+ `tools/{typescript,go,rust,python}.yaml`（每语言：<维度>_tool/_install/_cmd + architecture_config + optional 增强）；`ci.yml` 改为占位符模板，命令由生成器按语言注入；`generate-project.sh` 语言菜单收敛为 TypeScript/Go/Rust/Python（去掉 clojure/java），工具命令改为从映射表读取（get_yaml，bash 3.2 兼容）、生成后只保留当前语言映射表。实测 TS/Rust 两个 demo 生成验证通过（无残留占位符）。
+- **P1 Rust 依赖工具调研完成**：主选 **cargo-archtest-cli**（0.2.6，2026-09-22，Rust 原生 cargo 子命令：architecture.json 声明分层访问规则 MayOnlyAccess/MayNotAccess/MayNotBeAccessedBy/MayOnlyBeAccessedBy + 循环检测 + 外部 crate 白黑名单 + Subdomain 域内规则，可集成 rust test）；备选 cargo-modules（可视化 + `--acyclic` 循环检测 + orphans）。纠正此前"Rust 无分层约束工具"的判断。
+- **工具-语言解耦原则（用户决策）**：质量关卡只声明"查什么维度+阈值"，工具按语言延迟注入——ROADMAP 新增该原则，P1 重构为"gates.yaml（维度/阈值）+ tools/<语言>.yaml（工具映射表）+ 生成器注入"，P2 的 DRY 维度进映射表，P5 的 quality-check.sh 改为读映射表自动拼装命令。
+- **目标语言约束确认（用户明确）**：TypeScript / Go / Rust / Python，不使用 Clojure / Java。ROADMAP 按约束调整：P1 从"补收 Bob dependency-checker"改为"各目标语言通用依赖工具补位（TS→dependency-cruiser、Python→import-linter、Go/Rust 待调研）"；P2 聚焦 dry4go/dryer；P5 并入生成器语言清单收敛（去掉 clojure/java）；上游 Clojure 工具（crap4clj/clj-mutate/swarm-forge/uml-viewer）降级为参考实现。
+- **新增 docs/ROADMAP.md（改进路线图）**：对 Bob 全部 100 个公开仓库全量盘点后登记 5 项改进（P1 补收 dependency-checker 架构依赖专职工具 / P2 评估 DRY 检查家族 dry4clj·dry4go·dry4java·dryer 作潜在第五件套 / P3 参考 Acceptance-Pipeline-Specification 校准模板 / P4 吸收 negative-test-experiment 实验数据佐证 CRAP 阈值 / P5 一键质检脚本 quality-check.sh），并列明排除项（crap4java 等已被多语言版覆盖、arch-view 是 uml-viewer 前身、教学/游戏仓库非工具）。
 - **理论一手来源入库（方案 A）**：新增 `docs/reference/`——Bob 本人完整访谈《Software Fundamentals in the Age of AI》（Matt Pocock 频道，56:39，2026-08-19）的中文整理稿 + 英文逐字稿（YouTube 自动字幕清洗稿）。该访谈即抖音「大小飞」16 分钟中文剪辑版的原始来源。
 - THEORY.md 全面校准（标注 `〔原稿〕`）：① 修正变异测试耗时口径（原稿："agent 30 秒跑完"而非"30 分钟完成"）；② 修正速度优势口径（单 agent 比人快 3–5 倍、流水线 4–5 倍）；③ 补全 QA Agent 职责原稿表述（QA 程序→可执行脚本→端到端操作 UI→确定性通过/失败）；④ 补全 §4"放弃 spec"（盖房子比喻、Agent 爱写计划原文）、§5 人的位置（轻量 spot check、不把 TDD 强加给 agent）、§7 新生代忠告重构为原稿五条+学徒制模型、§8 结语出处修正（Bob 自称记不清出处，普遍认为是 Dijkstra 名言）。
 - TERMS.md 校准：CRAP 阈值（人 ≤4、agent 6 可能 8）、TDD"拐杖"说法、来源标注指向 reference/。

@@ -1,5 +1,6 @@
 # Quality gates CI — GitHub Actions 模板
-# 生成自 clean-code-gauntlet。按项目语言启用对应 job，并安装对应工具（见 quality-gates/README.md 命令映射）。
+# 生成自 clean-code-gauntlet。占位符由 generate-project.sh 按语言从 quality-gates/tools/<语言>.yaml 注入。
+# 阈值见 quality-gates/gates.yaml；工具与命令见 quality-gates/tools/<语言>.yaml（生成后即项目内实际映射表）。
 
 name: quality-gates
 
@@ -13,32 +14,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # 按语言安装工具后运行 CRAP/复杂度检查，示例（Clojure）：
-      # - name: CRAP
-      #   run: bb crap
-      # 超阈值即失败（crap4clj 默认输出；或自行断言）
+      - name: Install {{CRAP_TOOL}}
+        run: {{CRAP_INSTALL}}
+      - name: CRAP gate（圈复杂度 ≤8 且 CRAP <30，见 gates.yaml）
+        run: {{CRAP_CMD}}
 
   mutation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # 示例（Clojure）：
-      # - name: Mutation testing
-      #   run: clj -M:mutate src/
-      # 存活变异体 > 0 即失败
+      - name: Install {{MUTATE_TOOL}}
+        run: {{MUTATE_INSTALL}}
+      - name: Mutation gate（存活变异体 = 0）
+        run: {{MUTATE_CMD}}
 
   coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # 示例（Clojure，Cloverage 100% 门禁）：
-      # - name: Coverage gate
-      #   run: clj -M:cov
+      - name: Install {{COV_TOOL}}
+        run: {{COV_INSTALL}}
+      - name: Coverage gate（核心模块 ≥80%）
+        run: {{COV_CMD}}
 
   architecture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # 示例（Clojure dependency-checker / 其它语言 ArchUnit 等）：
-      # - name: Dependency rules
-      #   run: bb dep-check
+      - name: Install {{ARCH_TOOL}}
+        run: {{ARCH_INSTALL}}
+      - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
+        run: {{ARCH_CMD}}

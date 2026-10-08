@@ -1,0 +1,29 @@
+# 工具映射表 — TypeScript
+# 生成器读取本文件，把实际工具与命令注入 ci.yml 与 quality-gates 说明。
+# 字段：<维度>_tool / <维度>_install / <维度>_cmd；architecture 另含 config 文件名。
+
+language: typescript
+
+crap_tool: crapper
+crap_install: pipx install crapper
+crap_cmd: crapper src/
+
+mutation_tool: mutator
+mutation_install: pipx install mutator
+mutation_cmd: mutator --source src --tests test
+
+coverage_tool: c8
+coverage_install: npm i -D c8
+coverage_cmd: npx c8 --reporter=lcov npm test
+
+architecture_tool: dependency-cruiser
+architecture_install: npm i -D dependency-cruiser
+architecture_config: .dependency-cruiser.js
+architecture_cmd: npx depcruise --validate .dependency-cruiser.js src
+
+# 可选增强：archlint（Rust 实现的 TS 架构探测器，28+ detectors：循环依赖/上帝模块/层违规）
+optional_tool: archlint
+optional_install: npm i -D archlint
+optional_cmd: npx archlint check src
+
+note: "crapper/mutator 为 Bob 多语言版（Python 实现），支持 TypeScript"

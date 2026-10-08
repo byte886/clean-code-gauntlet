@@ -1,0 +1,29 @@
+# 工具映射表 — Go
+# 生成器读取本文件，把实际工具与命令注入 ci.yml 与 quality-gates 说明。
+# 字段：<维度>_tool / <维度>_install / <维度>_cmd；architecture 另含 config 文件名。
+
+language: go
+
+crap_tool: crapper
+crap_install: pipx install crapper
+crap_cmd: crapper ./...
+
+mutation_tool: mutator
+mutation_install: pipx install mutator
+mutation_cmd: mutator --source . --tests .
+
+coverage_tool: go-cover
+coverage_install: go version
+coverage_cmd: go test -cover ./...
+
+architecture_tool: go-arch-lint
+architecture_install: go install github.com/fe3dback/go-arch-lint@latest
+architecture_config: .go-arch-lint.yml
+architecture_cmd: go-arch-lint
+
+# 备选：arch-go（规则更宽：包内容/函数/命名规则；可作 go test 集成）
+optional_tool: arch-go
+optional_install: go install github.com/arch-go/arch-go@latest
+optional_cmd: arch-go --json
+
+note: "go-arch-lint 需 Go 1.25+；architecture_config 内声明 components 与 mayDependOn"
