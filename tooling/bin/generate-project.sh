@@ -154,6 +154,32 @@ module.exports = {
 TSEOF
 fi
 
+# Rust 骨架：Cargo.toml（库 crate）+ src/lib.rs（模块入口）+ architecture.json
+# （cargo-archtest-cli 的架构约束配置，落地3-Rust 实测口径）
+if [ "$PROJ_LANG" = "rust" ]; then
+  echo "  （rust 骨架：Cargo.toml / src/lib.rs / architecture.json）"
+  cat > "$OUT_DIR/Cargo.toml" <<'RSEOF'
+[package]
+name = "{{PACK_NAME}}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+RSEOF
+  cat > "$OUT_DIR/src/lib.rs" <<'RSEOF'
+// 业务模块在此声明：pub mod <module>;
+RSEOF
+  cat > "$OUT_DIR/architecture.json" <<'RSEOF'
+{
+  "layer_names": ["core"],
+  "access_rules": [
+    "NoLayerCyclicDependencies",
+    "NoModuleCyclicDependencies"
+  ]
+}
+RSEOF
+fi
+
 # 替换占位符（分隔符统一用 |；替换文本先转义 & \ |，防止映射表命令中的特殊字符被 sed 吞掉）
 esc_sed() {
   printf '%s' "$1" | sed 's/[&\\|]/\\&/g'

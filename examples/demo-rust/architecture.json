@@ -1,0 +1,7 @@
+{
+  "layer_names": ["core"],
+  "access_rules": [
+    "NoLayerCyclicDependencies",
+    "NoModuleCyclicDependencies"
+  ]
+}

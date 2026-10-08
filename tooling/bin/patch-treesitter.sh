@@ -16,11 +16,11 @@ set -uo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VENDOR_DIR="$REPO_ROOT/tooling/vendor"
 
-# 各工具：src 相对路径 与 额外 pip 包（独立语法包按目标语言装；python/go/ts 已实测，其余语言按需加）
+# 各工具：src 相对路径 与 额外 pip 包（独立语法包按目标语言装；python/go/ts/rust 已实测，其余语言按需加）
 TOOLS=(
-  "crapper|src/crapper/languages/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript"
-  "mutator|src/mutator/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript pytest coverage"
-  "dryer|src/dryer/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript"
+  "crapper|src/crapper/languages/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript tree-sitter-rust"
+  "mutator|src/mutator/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript tree-sitter-rust pytest coverage"
+  "dryer|src/dryer/treesitter.py|tree-sitter-python tree-sitter-go tree-sitter-typescript tree-sitter-javascript tree-sitter-rust"
 )
 
 NEW_PARSER_FOR='@lru_cache(maxsize=None)

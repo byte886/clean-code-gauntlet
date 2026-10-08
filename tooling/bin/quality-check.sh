@@ -75,6 +75,17 @@ for v in CRAP_CMD MUTATE_CMD COV_CMD ARCH_CMD DRY_CMD; do
   eval "$v=\"\${$v//<GAUNTLET_DIR>/$REPO_ROOT}\""
 done
 
+# Rust 覆盖率工具链补丁：cargo-llvm-cov 需要 llvm-tools-preview（rustup 组件）
+# 或 LLVM_COV/LLVM_PROFDATA 环境变量。macOS Homebrew rust 无 rustup 组件，brew llvm 为
+# keg-only（不在 PATH）→ 自动探测并导出；GitHub Actions（ubuntu 镜像自带组件）无需处理。
+if [ "$LANG_NAME" = "rust" ]; then
+  if [ -z "${LLVM_COV:-}" ] && command -v brew >/dev/null 2>&1 && [ -x "$(brew --prefix llvm)/bin/llvm-cov" ]; then
+    export LLVM_COV="$(brew --prefix llvm)/bin/llvm-cov"
+    export LLVM_PROFDATA="$(brew --prefix llvm)/bin/llvm-profdata"
+    echo "  （rust：已导出 brew llvm 的 LLVM_COV/LLVM_PROFDATA，供 crapper/llvm-cov 使用）"
+  fi
+fi
+
 echo "=============================================="
 echo " clean-code-gauntlet 质量检查（${LANG_NAME}）"
 echo " 映射表：$TOOLS_YAML"

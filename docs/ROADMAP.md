@@ -104,3 +104,9 @@
   - **生成器改进**：TS 骨架自动生成 package.json（vitest 脚本）/ tsconfig.json / vitest.config.ts（LCOV + thresholds）/ .dependency-cruiser.cjs（"type":"module" 兼容）。
   - **新增 examples/demo-python 入库**：Python demo（唯一跑通 Python 全链路的成品）收进 examples/，与 Go/TS 形成跨语言三对照。
   - **已知遗留**：Rust 未真装真跑；TS/Go 的 CI 实测只覆盖 Go（仓库根 workflow）；examples/demo-ts 在真实独立仓库触发未验证。
+- 2026-10-09：**落地 3-Rust（Rust 全链路真跑通，examples/demo-rust 入库）**——
+  - **Rust demo 六维度全 PASS**：CRAP 全过（cov 100%）；变异 93.8%（16 sites 15 杀 1 活 = 等价变异体 `qty<=0`→`<`，与 TS/Go 同款边界，人工核验豁免）；覆盖率 100%（cargo llvm-cov）；架构 cargo archtest 0 违规；DRY dryer 0 候选。
+  - **实测修正（Rust 特有坑，全部回流）**：① **macOS Homebrew rust 无 llvm-tools-preview 组件**（cargo-llvm-cov 报 failed to find llvm-tools-preview；rustup component 对 Homebrew rust 无效）→ quality-check.sh 对 rust 自动探测 brew llvm（keg-only 不在 PATH）并导出 LLVM_COV/LLVM_PROFDATA，crapper/llvm-cov 子进程继承；GitHub Actions ubuntu 镜像自带组件无需处理；② **lib.rs 是模块入口**：cargo test 跑 0 个测试通常是 lib.rs 未声明 pub mod <module>（生成器骨架占位，业务接入须写模块声明）；③ 本机 cargo 已配 USTC 镜像（稀疏索引），工具安装无网络问题。
+  - **生成器改进**：Rust 骨架自动生成 Cargo.toml（库 crate）/ src/lib.rs（模块入口占位）/ architecture.json（cargo-archtest-cli 配置）。
+  - **至此四语言（Python/Go/TS/Rust）全部真装真跑，落地 3 全量完成**；CI 实测覆盖 Go（仓库根 workflow），TS/Rust 的 CI 命令口径经本地全 PASS 验证（ubuntu 环境自带组件/镜像，预期可跑，未在 Actions 上实测）。
+  - **已知遗留**：TS/Rust 的 GitHub Actions 实测未跑（可后续加 job）；examples/demo-* 在真实独立仓库触发未验证；generated/ 旧 demo（demo-cart/demo-gen/demo-go）为 gitignore 本地载体。
