@@ -22,8 +22,10 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
           cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
+      - name: 安装测试依赖（crapper 对 Python 用系统 python3 跑 pytest/coverage）
+        run: pip install pytest coverage
       - name: CRAP gate（圈复杂度 ≤8 且 CRAP <30，见 gates.yaml）
-        run: $RUNNER_TEMP/gauntlet/crapper/crapper
+        run: pip install pytest coverage && $RUNNER_TEMP/gauntlet/crapper/crapper
 
   mutation:
     runs-on: ubuntu-latest
@@ -35,8 +37,10 @@ jobs:
           git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
           cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
           .venv/bin/pip install pytest coverage
+      - name: 安装测试依赖（crapper 对 Python 用系统 python3 跑 pytest/coverage）
+        run: pip install pytest coverage
       - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
-        run: $RUNNER_TEMP/gauntlet/crapper/crapper
+        run: pip install pytest coverage && $RUNNER_TEMP/gauntlet/crapper/crapper
       - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免，见 EQUIVALENT-MUTANTS.md）
         run: |
           set +e
@@ -53,8 +57,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install coverage.py
-        run: pip install coverage
+      - name: Install coverage.py 与 pytest
+        run: pip install pytest coverage
       - name: Coverage gate（核心模块 ≥80%）
         run: coverage run -m pytest && coverage report --fail-under=80
 

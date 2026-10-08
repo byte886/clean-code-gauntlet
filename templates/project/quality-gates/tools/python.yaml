@@ -7,14 +7,14 @@ language: python
 crap_tool: crapper
 crap_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
 crap_cmd: <GAUNTLET_DIR>/tooling/vendor/crapper/crapper
-crap_ci_cmd: $RUNNER_TEMP/gauntlet/crapper/crapper
+crap_ci_cmd: pip install pytest coverage && $RUNNER_TEMP/gauntlet/crapper/crapper
 
 mutation_tool: mutator
 mutation_install: bash <GAUNTLET_DIR>/tooling/bin/install-tools.sh && bash <GAUNTLET_DIR>/tooling/bin/patch-treesitter.sh
 mutation_cmd: <GAUNTLET_DIR>/tooling/vendor/mutator/mutator
 
 coverage_tool: coverage.py
-coverage_install: pip install coverage
+coverage_install: pip install pytest coverage
 coverage_cmd: coverage run -m pytest && coverage report --fail-under=80
 
 architecture_tool: import-linter

@@ -154,6 +154,71 @@ jobs:
           npm i -D dependency-cruiser
           npx depcruise --validate .dependency-cruiser.cjs src
 
+  # ============ Python（examples/demo-python） ============
+  py-crap-complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install crapper（vendor 模式）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          cd $RUNNER_TEMP/gauntlet/crapper && ./crapper --help
+      - name: 安装测试依赖（crapper 对 Python 用系统 python3 跑 pytest/coverage）
+        run: pip install pytest coverage
+      - name: CRAP gate（在 examples/demo-python 内运行）
+        run: |
+          cd examples/demo-python
+          pip install pytest coverage && $RUNNER_TEMP/gauntlet/crapper/crapper
+
+  py-mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install mutator（vendor 模式，自用 .venv 跑测试）
+        run: |
+          git clone --depth 1 https://github.com/unclebob/crapper.git $RUNNER_TEMP/gauntlet/crapper
+          git clone --depth 1 https://github.com/unclebob/mutator.git $RUNNER_TEMP/gauntlet/mutator
+          cd $RUNNER_TEMP/gauntlet/mutator && ./mutator --help >/dev/null 2>&1 || true
+          .venv/bin/pip install pytest coverage
+      - name: 安装测试依赖（crapper 对 Python 用系统 python3 跑 pytest/coverage）
+        run: pip install pytest coverage
+      - name: 生成覆盖率基线（mutator 的覆盖率数据来自 crapper 产物，必须先跑 crapper）
+        run: |
+          cd examples/demo-python
+          pip install pytest coverage && $RUNNER_TEMP/gauntlet/crapper/crapper
+      - name: Mutation gate（存活变异体 = 0；等价变异体人工核验后可豁免）
+        run: |
+          set +e
+          cd examples/demo-python
+          $RUNNER_TEMP/gauntlet/mutator/mutator
+          code=$?
+          set -e
+          if [ $code -eq 3 ] && [ -f EQUIVALENT-MUTANTS.md ]; then
+            echo "→ 存活变异体均已人工核验为等价变异体（EQUIVALENT-MUTANTS.md），豁免"
+            exit 0
+          fi
+          exit $code
+
+  py-coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Coverage gate（核心模块 ≥80%）
+        run: |
+          cd examples/demo-python
+          pip install pytest coverage
+          coverage run -m pytest && coverage report --fail-under=80
+
+  py-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Architecture gate（依赖违规 = 0、循环依赖 = 0）
+        run: |
+          cd examples/demo-python
+          pip install import-linter
+          lint-imports
+
   # ============ Rust（examples/demo-rust） ============
   rust-crap-complexity:
     runs-on: ubuntu-latest
