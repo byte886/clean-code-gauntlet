@@ -117,3 +117,8 @@
     ① **mutation job 必须先跑 crapper**：mutator 覆盖率数据来自 crapper 产物（coverage.load_bundle），不跑则覆盖率空 → 假 FAIL/假 PASS（Go CI 之前"全绿"是豁免掩盖的假 PASS，已同步修复）；② **TS 的 crapper/mutator job 需先 npm install**：crapper 对 TS 用 npm run coverage（vitest），无 node_modules 时覆盖率 0% → CRAP 虚高、mutator 全 uncovered；③ **工具必须 clone 在项目外（$RUNNER_TEMP/gauntlet/）**：clone 在项目内 .gauntlet/ 时 crapper 扫描把工具自身源码当项目一部分，跑工具自带 145 个 pytest（缺 bb/uml）→ exit 2。本机 vendor 在 gauntlet 仓库 tooling/vendor/（天然项目外）所以本地从未暴露。
   - 模板新增 {{CRAP_CI_CMD}} 注入点（含语言测试依赖安装）；映射表加 crap_ci_cmd 字段（TS=npm install && crapper，Go/Python/Rust=crapper）。
 - 2026-10-09：**剩余任务 #20（upstream-sync 实测）/ #21（TS/Rust CI job 实测）/ #22（README 收尾）待推进**。
+- 2026-10-09：**#21 TS/Rust GitHub Actions 实测完成 + #22 收尾**——
+  - 仓库根 workflow 扩展为三语言 11 job（go-*/ts-*/rust-* 各含 CRAP/变异/覆盖率/架构，Go 另有 DRY），**实测全绿**（ts-mutation 38s、rust-mutation 1m47s，含 rustup llvm-tools-preview 组件与 cargo-llvm-cov 编译）。
+  - 修复两处：① 原 Go job 工具路径 `../.$RUNNER_TEMP/...` 拼接错误（$RUNNER_TEMP 为绝对路径应直接引用，此前该步可能未真正执行）；② TS job 独立安装依赖步骤漏 cd examples/demo-ts（仓库根无 package.json → ENOENT）。
+  - #22：README 补 examples 四语言示例表与端到端实战项目（csv2md）说明；generated/ 旧 demo（demo-cart/demo-gen/demo-go）清理（已被 examples 吸收），保留 csv2md。
+  - **至此四步（端到端实战→上游变更实测→TS/Rust CI 实测→小收尾）全部完成**，主目标闭环：生成器可生成新项目、六维度质检四语言真跑通、CI 三语言实测全绿、上游变更可检测迭代。

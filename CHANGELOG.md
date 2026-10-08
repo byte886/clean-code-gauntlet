@@ -45,3 +45,7 @@
 
 ### 变更
 - **上游变更机制实测（scripts/upstream-sync.sh 全路径验证）**：① 无变更路径——6 仓真实 API 核对全部"已是最新"；② 模拟变更路径——篡改 mutator 版本卡 sha 后重跑，正确检测 `★ 有变更` 并自动回写真实 latest_sha/updated_at，输出决策流程提示（更新 UPSTREAM_TRACKING → CHANGELOG → 必要时同步 templates）。**补齐缺口**：upstream-sync 仓库清单从 6 仓补到 7 仓（新增 dryer，与 install-tools.sh 对齐），建立 dryer 基线版本卡（66ff6d2）。机制结论：迭代更新机制可用；真实上游变更时可人工评估变更内容决定是否同步模板。
+
+### 变更
+- **TS/Rust GitHub Actions 实测完成（三语言 11 job 全绿）**：仓库根 workflow（examples-demo-quality-gates）扩展 ts-*/rust-* 组（CRAP/变异/覆盖率/架构），复用 examples/demo-ts 与 demo-rust 六维度命令；Rust coverage job 补 `rustup component add llvm-tools-preview`。修复：① Go job 工具路径 `../.$RUNNER_TEMP` 拼接 bug（绝对路径直接引用）；② TS job 安装依赖步骤漏 cd。实测：ts-mutation 38s、rust-mutation 1m47s，11 job 全部 ✓。
+- **小收尾**：README 补 examples 四语言示例对照表与端到端实战项目（generated/csv2md → byte886/csv2md）说明；generated/ 旧 demo 清理（demo-cart/demo-gen/demo-go 已被 examples 吸收）。
