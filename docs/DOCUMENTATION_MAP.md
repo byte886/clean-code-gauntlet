@@ -29,6 +29,7 @@
 
 ### 想理解某个术语/概念
 - `docs/TERMS.md` — 术语表（含通俗解释与技术细节）
+- `docs/reference/` — 理论一手来源（Bob 访谈原稿 + 英文逐字稿，核对表述时用）
 
 ### 想了解仓库为什么长这样
 - `docs/ADR/001-repo-shape.md` — 仓库形态决策记录
@@ -47,6 +48,9 @@
 | docs/TERMS.md | Reference | 术语表 |
 | docs/WORKFLOW.md | Process | 使用流程 |
 | docs/UPSTREAM_TRACKING.md | Active | 上游版本基线 |
+| docs/reference/README.md | Reference | 理论一手来源目录说明 |
+| docs/reference/uncle-bob-ai-interview-notes.md | Reference | Bob 访谈中文整理稿（八章主线，2026-08-19 LIVE） |
+| docs/reference/software-fundamentals-in-the-age-of-ai-transcript-en.txt | Reference | 同访谈英文逐字稿（YouTube 自动字幕） |
 | docs/DOCUMENTATION_MAP.md | Reference | 本文档 |
 | docs/DIRECTORY_STRUCTURE.md | Reference | 目录结构说明 |
 | docs/ADR/001-repo-shape.md | Decision | 仓库形态 ADR |

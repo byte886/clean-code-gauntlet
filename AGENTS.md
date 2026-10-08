@@ -58,6 +58,7 @@
 - 每次会话若涉及"检查更新/维护"：运行 `scripts/upstream-sync.sh`，**如实报告**比对结果（已是最新 / 有变更：哪些仓库、旧→新 sha、变化说明）。
 - 上游有变更时：更新对应 `tooling/upstream/<repo>.md` 的版本字段 → 更新 `docs/UPSTREAM_TRACKING.md` 基线 → `CHANGELOG.md` 记一条 → 若变更影响生成器/模板，同步更新 `templates/` 与 `generate-project.sh`。
 - GitHub API 抓取失败时**如实报告失败**，不得用旧快照冒充"已是最新"。
+- **理论原稿也在追踪范围**：Bob 的新访谈/演讲/长文（一手理论来源）→ 存入 `docs/reference/`（见该目录 README 的校准规则）并记 CHANGELOG；抖音等二手解说稿只作辅助，理论表述以 `docs/reference/` 原稿为准。
 
 ### 3.3 生成项目必须走生成器
 - 用户要"用这套理论开发/生成项目"时，**必须**走 `tooling/bin/generate-project.sh`（或其对应 SOP），不要手搓项目结构。
@@ -66,7 +67,7 @@
 
 ### 3.4 文档纪律
 - README 只做概览与边界；理论/流程/术语进 `docs/`；AI 规则只进 AGENTS.md；变更只进 CHANGELOG.md；**不双写**。
-- 理论手册（THEORY.md）与术语表（TERMS.md）更新时，必须基于**上游一手资料**（Bob 的 GitHub README / 官方文档），并标注来源；音译存疑标注 `〔存疑〕`。
+- 理论手册（THEORY.md）与术语表（TERMS.md）更新时，必须基于**上游一手资料**（优先 `docs/reference/` 访谈原稿，其次 Bob 的 GitHub README / 官方文档），并标注来源；音译存疑标注 `〔存疑〕`。
 - 事实性内容（版本号、sha、日期）必须来自上游抓取或可复现计算，禁止编造。
 
 ### 3.5 交付前验证

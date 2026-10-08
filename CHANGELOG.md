@@ -13,6 +13,12 @@
 ## [未发布]
 
 ### 变更
+- **理论一手来源入库（方案 A）**：新增 `docs/reference/`——Bob 本人完整访谈《Software Fundamentals in the Age of AI》（Matt Pocock 频道，56:39，2026-08-19）的中文整理稿 + 英文逐字稿（YouTube 自动字幕清洗稿）。该访谈即抖音「大小飞」16 分钟中文剪辑版的原始来源。
+- THEORY.md 全面校准（标注 `〔原稿〕`）：① 修正变异测试耗时口径（原稿："agent 30 秒跑完"而非"30 分钟完成"）；② 修正速度优势口径（单 agent 比人快 3–5 倍、流水线 4–5 倍）；③ 补全 QA Agent 职责原稿表述（QA 程序→可执行脚本→端到端操作 UI→确定性通过/失败）；④ 补全 §4"放弃 spec"（盖房子比喻、Agent 爱写计划原文）、§5 人的位置（轻量 spot check、不把 TDD 强加给 agent）、§7 新生代忠告重构为原稿五条+学徒制模型、§8 结语出处修正（Bob 自称记不清出处，普遍认为是 Dijkstra 名言）。
+- TERMS.md 校准：CRAP 阈值（人 ≤4、agent 6 可能 8）、TDD"拐杖"说法、来源标注指向 reference/。
+- README.md / DOCUMENTATION_MAP.md 登记新资料。
+
+### 变更
 - 初始版本 0.1.0（2026-10-08）：仓库创建。形态=**工具型知识库**（ADR-001）：Bob 确定性质量方法论（CRAP/变异测试/架构约束/多 Agent 流水线）的**理论手册 + 可装配工具层 + 上游追踪机制**三合一。
 - 治理壳（参考 accounting-kb 模式）：README 边界表、AGENTS.md（AI 操作手册：vendor 模式/上游追踪/生成器纪律）、CHANGELOG、LICENSE（MIT）、.gitignore、docs 分层（THEORY/TERMS/WORKFLOW/UPSTREAM_TRACKING/DOCUMENTATION_MAP/DIRECTORY_STRUCTURE/ADR）。
 - 工具层（参考 swarm-forge 模式）：6 张上游工具卡（swarm-forge/crap4clj/crapper/clj-mutate/mutator/uml-viewer，含 2026-10-08 抓取版本快照）、`install-tools.sh`（vendor 安装器）、`generate-project.sh`（问答式项目生成器：六角色 prompts + 三层宪法 + 质量关卡配置 + 文档骨架）。

@@ -16,12 +16,19 @@
 |------|---------|--------------------|--------|
 | unclebob/swarm-forge | main | f4f5fbc | 2026-09-07 |
 | unclebob/crap4clj | master | e90be2e | 2026-09-17 |
-| unclebob/crapper | main | 9f1bead | 2026-10-03 |
+| unclebob/crapper | master | 9f1bead | 2026-10-03 |
 | unclebob/clj-mutate | master | cea397d | 2026-09-19 |
 | unclebob/mutator | main | c57f038 | 2026-10-03 |
 | unclebob/uml-viewer | master | f65dafe | 2026-10-07 |
 
 > 完整 sha 见各版本卡 `tooling/upstream/*.md`；基线由 `scripts/upstream-sync.sh` 自动比对更新，检测到变更即回写版本卡并提示更新本表。
+> 注：crapper 默认分支实测为 **master**（2026-10-08 用 git ls-remote 核实，非 main）。
+
+## 理论来源（一手资料）追踪
+
+| 日期 | 资料 | 说明 | 存档 |
+|------|------|------|------|
+| 2026-10-08 | Bob 访谈《Software Fundamentals in the Age of AI》（Matt Pocock 频道，56:39，2026-08-19 上传） | 中文整理稿（八章）+ 英文逐字稿；即抖音「大小飞」剪辑版的原始来源 | [docs/reference/](reference/) |
 
 ## 变更日志（上游侧）
 

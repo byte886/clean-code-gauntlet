@@ -88,3 +88,5 @@ clean-code-gauntlet/
 | uml-viewer | github.com/unclebob/uml-viewer | 架构查看器 + 依赖约束可视化 |
 
 **上游版本追踪**：[docs/UPSTREAM_TRACKING.md](docs/UPSTREAM_TRACKING.md)
+
+**理论一手来源（访谈原稿）**：Bob 本人 2026-08-19 完整访谈《Software Fundamentals in the Age of AI》（56:39）的中文整理稿与英文逐字稿，存档于 [docs/reference/](docs/reference/)——理论层表述均以该原稿为准。
