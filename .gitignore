@@ -1,0 +1,12 @@
+# macOS
+.DS_Store
+*.swp
+.AppleDouble
+
+# 运行产物与本地缓存（vendor 克隆等）
+tooling/vendor/
+*.log
+*.tmp
+
+# 生成的项目（generate-project.sh 的输出默认落 ./generated/，不入库）
+generated/

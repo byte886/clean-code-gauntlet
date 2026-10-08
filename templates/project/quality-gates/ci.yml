@@ -1,0 +1,44 @@
+# Quality gates CI — GitHub Actions 模板
+# 生成自 clean-code-gauntlet。按项目语言启用对应 job，并安装对应工具（见 quality-gates/README.md 命令映射）。
+
+name: quality-gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  crap-complexity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 按语言安装工具后运行 CRAP/复杂度检查，示例（Clojure）：
+      # - name: CRAP
+      #   run: bb crap
+      # 超阈值即失败（crap4clj 默认输出；或自行断言）
+
+  mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 示例（Clojure）：
+      # - name: Mutation testing
+      #   run: clj -M:mutate src/
+      # 存活变异体 > 0 即失败
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 示例（Clojure，Cloverage 100% 门禁）：
+      # - name: Coverage gate
+      #   run: clj -M:cov
+
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # 示例（Clojure dependency-checker / 其它语言 ArchUnit 等）：
+      # - name: Dependency rules
+      #   run: bb dep-check
