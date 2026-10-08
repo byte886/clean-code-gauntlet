@@ -21,9 +21,9 @@ architecture_install: pip install import-linter
 architecture_config: pyproject.toml  # [tool.importlinter] 契约：layers / forbidden
 architecture_cmd: lint-imports
 
-# 可选：DRY 重复代码检查（Bob dry4clj 的 Python 版）
-optional_tool: dryer
-optional_install: pip install dryer
-optional_cmd: dryer src/
+# DRY 维度（可选）：dryer（Bob 多语言版，支持 Python；已核验 README：--threshold 默认 0.82、--edn、--min-lines，跳过嵌套函数）
+dry_tool: dryer
+dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
+dry_cmd: dryer --edn src/
 
 note: "import-linter 契约在 pyproject.toml 的 [tool.importlinter] 下声明（root_packages + contracts）"

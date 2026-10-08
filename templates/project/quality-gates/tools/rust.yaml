@@ -26,4 +26,9 @@ optional_tool: cargo-modules
 optional_install: cargo install cargo-modules
 optional_cmd: cargo modules dependencies --lib --acyclic
 
+# DRY 维度（可选）：dryer（Bob 多语言版，支持 Rust；已核验 README：函数与方法按结构指纹比对，跳过 mod tests 与闭包）
+dry_tool: dryer
+dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
+dry_cmd: dryer --edn src/
+
 note: "cargo-archtest-cli 支持 MayOnlyAccess/MayNotAccess/循环检测/外部 crate 白黑名单；architecture.json 声明 layer_names 与 access_rules"

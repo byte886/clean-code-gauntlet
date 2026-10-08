@@ -13,6 +13,8 @@
 ## [未发布]
 
 ### 变更
+- **P5 一键质检脚本 quality-check.sh（完成）**：读 tools/<语言>.yaml 自动拼装四件套命令 + 阈值判定（命令退出码 = 维度 PASS/FAIL）；支持 `--list` 预览、`--with-dry` 可选 DRY 维度、语言自动推断（命令行参数 > 项目目录映射表 > 模板）；实测三语言 + 项目内自动推断验证通过（修复 bash 3.2 全角字符变量名坑）。
+- **P2 DRY 维度落地（完成，更正重要判断）**：核验官方 README 确认 **dryer 为多语言版**（Clojure/Java/Go/TypeScript/Rust/Python 全覆盖，Jaccard 结构指纹 + --threshold 0.82/--edn/--min-lines），**推翻此前"TS/Rust 无 Bob DRY 工具"的结论**；dry4go（Go 专用，--json）作备选。4 张 tools/<语言>.yaml 写入 dry_tool/dry_install/dry_cmd，gates.yaml 可选维度同步。
 - **P1 解耦重构实施完成（用户决策落地）**：quality-gates 从"绑定 Bob 工具"重构为两层结构——`gates.yaml`（维度+阈值声明，语言无关）+ `tools/{typescript,go,rust,python}.yaml`（每语言：<维度>_tool/_install/_cmd + architecture_config + optional 增强）；`ci.yml` 改为占位符模板，命令由生成器按语言注入；`generate-project.sh` 语言菜单收敛为 TypeScript/Go/Rust/Python（去掉 clojure/java），工具命令改为从映射表读取（get_yaml，bash 3.2 兼容）、生成后只保留当前语言映射表。实测 TS/Rust 两个 demo 生成验证通过（无残留占位符）。
 - **P1 Rust 依赖工具调研完成**：主选 **cargo-archtest-cli**（0.2.6，2026-09-22，Rust 原生 cargo 子命令：architecture.json 声明分层访问规则 MayOnlyAccess/MayNotAccess/MayNotBeAccessedBy/MayOnlyBeAccessedBy + 循环检测 + 外部 crate 白黑名单 + Subdomain 域内规则，可集成 rust test）；备选 cargo-modules（可视化 + `--acyclic` 循环检测 + orphans）。纠正此前"Rust 无分层约束工具"的判断。
 - **工具-语言解耦原则（用户决策）**：质量关卡只声明"查什么维度+阈值"，工具按语言延迟注入——ROADMAP 新增该原则，P1 重构为"gates.yaml（维度/阈值）+ tools/<语言>.yaml（工具映射表）+ 生成器注入"，P2 的 DRY 维度进映射表，P5 的 quality-check.sh 改为读映射表自动拼装命令。

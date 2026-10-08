@@ -26,4 +26,9 @@ optional_tool: archlint
 optional_install: npm i -D archlint
 optional_cmd: npx archlint check src
 
+# DRY 维度（可选）：dryer（Bob 多语言版，支持 TypeScript；已核验 README：Jaccard 结构指纹 + --threshold/--edn/--min-lines）
+dry_tool: dryer
+dry_install: 克隆 unclebob/dryer 到 tooling/vendor（首跑自动建 .venv）
+dry_cmd: dryer --edn src/
+
 note: "crapper/mutator 为 Bob 多语言版（Python 实现），支持 TypeScript"

@@ -16,4 +16,4 @@
 
 # 可选维度（按需启用）
 可选维度:
-  DRY重复代码: { 说明: "Go→dry4go、Python→dryer；TS/Rust 待生态成熟（见 ROADMAP P2）" }
+  DRY重复代码: { 说明: "dryer（Bob 多语言版，覆盖 TS/Go/Rust/Python）或 dry4go（Go 专用）；命令见各语言映射表 dry_* 字段，quality-check.sh --with-dry 启用" }

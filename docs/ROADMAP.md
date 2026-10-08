@@ -43,10 +43,9 @@
   - Rust → **cargo-archtest-cli**（主选，已核验 docs.rs 0.2.6：`architecture.json` 声明 layer_names + access_rules，支持 MayOnlyAccess/MayNotAccess/MayNotBeAccessedBy/MayOnlyBeAccessedBy + 循环检测（NoLayerCyclicDependencies）+ 外部 crate 白黑名单（Available/Restricted）+ Subdomain 域内规则；可作 cargo 子命令 `cargo archtest` 或 dev-dependency 集成 rust test）；备选 cargo-modules（可视化 + `dependencies --acyclic` 循环检测 + orphans）
 - **实施（2026-10-08）**：① `templates/project/quality-gates/gates.yaml`（维度+阈值声明，语言无关）；② `templates/project/quality-gates/tools/{typescript,go,rust,python}.yaml`（每语言：<维度>_tool/_install/_cmd + architecture_config + optional 增强）；③ `ci.yml` 改为占位符模板（{{CRAP_CMD}} 等由生成器注入）；④ `tooling/bin/generate-project.sh` 语言菜单收敛为 TypeScript/Go/Rust/Python，工具命令从 tools/<语言>.yaml 读取（get_yaml，bash 3.2 兼容），注入 install+cmd 占位符，生成后只保留当前语言映射表；⑤ 实测 TS/Rust 两个 demo 生成验证通过（无残留占位符）。
 
-### P2：DRY 维度进映射表（按语言评估）
-- **Bob 可用**：dry4go（Go，25★）/ dryer（Python，19★）。
-- **待补**：TypeScript / Rust 无 Bob 版，评估第三方（如 jscpd 等）或暂缓该维度。
-- **动作**：验证 dry4go / dryer 命令与输出格式 → 写入 tools/ 映射表 → 决定 TS/Rust 是否单独调研。
+### P2：DRY 维度进映射表（✅ 已完成）
+- **结论（已核验官方 README）**：**dryer（unclebob，19★）是多语言版**——Clojure/Java/Go/TypeScript/Rust/Python 全支持，一次运行按文件语言自动归一化结构指纹（Jaccard 相似度，`--threshold` 默认 0.82，`--edn`/`--min-lines`/`--min-nodes`），**覆盖全部 4 种目标语言**（更正此前"TS/Rust 无 Bob 版"的判断）；dry4go（25★，Go 专用）作 Go 备选（`dry4go --json .`，按函数/方法 AST 归一化）。
+- **实施**：4 张 tools/<语言>.yaml 均写入 `dry_tool/dry_install/dry_cmd`；gates.yaml 可选维度说明更新；quality-check.sh 支持 `--with-dry` 一键跑 DRY。
 
 ### P3：参考 Acceptance-Pipeline-Specification 校准模板
 - **仓库**：unclebob/Acceptance-Pipeline-Specification（Go，190★）——可移植验收流水线规格。
@@ -58,9 +57,9 @@
 - **理由**：THEORY.md 的 CRAP 阈值（人 ≤4 / agent 6~8、≥30 危险）有 Bob 原话依据；该实验仓库提供可追溯的实验数据，可增强论证。
 - **动作**：读实验 README/数据，将可用证据并入 THEORY.md 并标注来源。
 
-### P5：一键质检脚本 quality-check.sh + 生成器语言收敛
-- **现状**：四件套检查命令分散在生成项目的 quality-gates/ 配置 + ci.yml 中，无"一条命令全检"脚本；generate-project.sh 语言清单**已随 P1 收敛**为 TypeScript/Go/Rust/Python（✅）。
-- **动作**：① tooling/bin/ 新增 quality-check.sh，**读 tools/<语言>.yaml 映射表自动拼装各维度命令 + 阈值判定**（剩余项）。
+### P5：一键质检脚本 quality-check.sh + 生成器语言收敛（✅ 已完成）
+- **现状**：四件套检查命令分散在生成项目的 quality-gates/ 配置 + ci.yml 中，无"一条命令全检"脚本；generate-project.sh 语言清单**已随 P1 收敛**为 TypeScript/Go/Rust/Python。
+- **实施**：① `tooling/bin/quality-check.sh`——读 tools/<语言>.yaml 自动拼装各维度命令 + 阈值判定（命令退出码 = 维度 PASS/FAIL），支持 `--list` 预览、`--with-dry` 可选维度、语言自动推断（命令行参数 > 项目目录映射表 > 模板）；② generate-project.sh 语言收敛（随 P1 完成）。实测三语言 --list + 项目内自动推断验证通过（修复 bash 3.2 全角字符变量名坑 `${LANG_NAME}`）。
 
 ## 明确排除（盘点结论）
 
@@ -83,3 +82,5 @@
 - 2026-10-08：P1 Go 依赖工具调研完成（抓取官方 README 核验）：主选 go-arch-lint（.go-arch-lint.yml + mayDependOn + graph），备选 arch-go（go test 集成、规则更宽）；Python 侧确认 import-linter 配置与命令。
 - 2026-10-08：P1 Rust 依赖工具调研完成（抓取 docs.rs 0.2.6 核验）：主选 **cargo-archtest-cli**（Rust 原生 cargo 子命令，architecture.json 声明分层访问规则 MayOnlyAccess/MayNotAccess/MayNotBeAccessedBy/MayOnlyBeAccessedBy + 循环检测 + 外部 crate 白黑名单 + Subdomain 域内规则，可作 dev-dependency 集成 rust test）；备选 cargo-modules（可视化 + --acyclic 循环检测 + orphans）。Rust 生态此前被高估"无分层约束工具"，实为存在且活跃（0.2.6 发布于 2026-09-22）。
 - 2026-10-08：P1 解耦重构实施完成——gates.yaml + 4 张 tools/<语言>.yaml + ci.yml 占位符模板 + 生成器注入逻辑改造；实测 TS/Rust 两个 demo 生成验证通过（无残留占位符、映射表按语言裁剪）。
+- 2026-10-08：P2 DRY 调研完成并落地（抓取官方 README 核验）：**dryer 为多语言版**（支持 Go/TypeScript/Rust/Python，Jaccard 结构指纹 + --threshold/--edn/--min-lines），更正此前"TS/Rust 无 Bob DRY 工具"的判断；dry4go 作 Go 专用备选。4 张映射表写入 dry_* 字段。
+- 2026-10-08：P5 一键质检脚本 quality-check.sh 完成——读映射表自动拼装四件套命令 + 阈值判定，支持 --list/--with-dry/语言自动推断；实测三语言 + 项目内自动推断验证通过（修复 bash 3.2 全角字符变量名坑）。P2/P5 全部完成，ROADMAP 仅剩 P3（Acceptance-Pipeline-Specification 模板校准）、P4（negative-test-experiment 数据佐证阈值）。
