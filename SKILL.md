@@ -1,4 +1,5 @@
 ---
+type: toolkit
 name: clean-code-gauntlet
 description: 基于 Bob 大叔（Robert C. Martin）确定性方法论的代码质量验证工具。支持 TypeScript/Go/Rust/Python 四语言，核心能力：新项目骨架生成、一键质量质检（CRAP 复杂度、变异测试、覆盖率、架构约束、DRY 重复检查）、多 Agent 流水线模板、上游工具更新追踪。必须用本技能的场景：要新建高质量代码项目、要给代码（尤其 AI 生成的代码）做确定性质量检查、要验证"AI 写的代码能不能信"。
 compatibility: macOS 实测通过；Linux（GitHub Actions ubuntu，四语言 15 job）实测通过；Windows 未适配
